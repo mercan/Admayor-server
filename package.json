@@ -1,0 +1,36 @@
+{
+  "name": "admayor-server",
+  "version": "1.0.0",
+  "main": "src/server.js",
+  "license": "ISC",
+  "author": {
+    "name": "İbrahim Can Mercan",
+    "email": "imrcn77@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "EKLE"
+  },
+  "scripts": {
+    "postinstall": "cp -r ./src/lib/rate-limit/* ./node_modules/fastify-rate-limit/",
+    "start": "npm run postinstall && NODE_ENV=production node ./src/server.js",
+    "start:dev": "npm run postinstall && NODE_ENV=development nodemon ./src/server.js"
+  },
+  "dependencies": {
+    "bcrypt": "^5.0.1",
+    "dotenv": "^10.0.0",
+    "fastify": "^3.20.1",
+    "fastify-formbody": "^5.1.0",
+    "fastify-helmet": "^5.3.2",
+    "fastify-rate-limit": "^5.6.0",
+    "joi": "^17.4.2",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.13.5",
+    "pino-pretty": "^5.1.2",
+    "redis": "^3.1.2"
+  },
+  "engines": {
+    "node": ">=15.x",
+    "npm": ">=7.7.0"
+  }
+}
