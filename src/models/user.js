@@ -1,4 +1,3 @@
-const config = require("../config/index");
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const Schema = mongoose.Schema;

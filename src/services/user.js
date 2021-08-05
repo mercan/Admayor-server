@@ -1,4 +1,5 @@
-const tokenCreate = require("../utils/tokenCreate");
+const { randomBytes } = require("crypto");
+const createToken = require("../utils/createToken.js");
 const userModel = require("../models/user");
 const RedisService = require("./Redis");
 
@@ -11,7 +12,9 @@ class UserService {
   async Signup(user) {
     try {
       const userRecord = await this.userModel.create(user);
-      return { token: tokenCreate(userRecord) };
+      await this.createEmailVerificationCode(userRecord);
+
+      return { token: createToken(userRecord) };
     } catch (err) {
       return { errorCode: err.code };
     }
@@ -30,29 +33,59 @@ class UserService {
       return false;
     }
 
-    return { token: tokenCreate(userRecord) };
+    return { token: createToken(userRecord) };
   }
 
-  async createApiKey(user) {
-    const userRecord = await this.userModel.findOne({ email: user.email });
+  async VerifyEmail(userId, emailVerificationCode) {
+    const userRecord = await this.userModel.findOne(
+      { _id: userId },
+      "emailVerified"
+    );
 
-    if (!userRecord) {
-      return { error: "User not found" };
+    const correctCode = await this.getEmailVerificationCode(userId);
+
+    if (
+      userRecord.emailVerified ||
+      !userRecord ||
+      !correctCode ||
+      emailVerificationCode !== correctCode
+    ) {
+      return false;
     }
 
-    const apiKey = await userRecord.createApiKey();
+    await this.client.del(`emailVerificationCode:${userId}`);
 
-    return apiKey;
+    return await this.userModel.updateOne(
+      { _id: userId },
+      { $set: { emailVerified: true } }
+    );
   }
 
-  async findByApiKey(apiKey) {
-    const userRecord = await this.userModel.findByApiKey(apiKey);
+  generateEmailVerificationCode(userId) {
+    return `${userId}:${randomBytes(128).toString("hex")}`;
+  }
 
-    if (!userRecord) {
-      return { error: "User not found" };
-    }
+  async createEmailVerificationCode({ _id: userId }) {
+    const code = this.generateEmailVerificationCode(userId);
 
-    return userRecord;
+    return await this.client.set(
+      `emailVerificationCode:${userId}`,
+      code,
+      "EX",
+      60 * 60 * 24
+    );
+  }
+
+  getEmailVerificationCode(userId) {
+    return new Promise((resolve, reject) => {
+      this.client.get(`emailVerificationCode:${userId}`, (err, result) => {
+        if (err) {
+          return reject(err);
+        }
+
+        resolve(result);
+      });
+    });
   }
 }
 

@@ -56,4 +56,36 @@ const signIn = async (req, res) => {
   });
 };
 
-module.exports = { signup, signIn };
+emailVerify = async (req, res) => {
+  if (!req.query.code) {
+    return res.status(400).send({
+      statusCode: 400,
+      message: "Code is required.",
+    });
+  }
+
+  const [userId, code] = req.query.code.split(":");
+
+  if (!userId || !code) {
+    return res.status(400).send({
+      statusCode: 400,
+      message: "Code is invalid.",
+    });
+  }
+
+  const result = await UserService.VerifyEmail(userId, req.query.code);
+
+  if (!result) {
+    return res.status(400).send({
+      statusCode: 400,
+      message: "Email verification failed.",
+    });
+  }
+
+  return res.status(200).send({
+    statusCode: 200,
+    message: "Email verified successfully.",
+  });
+};
+
+module.exports = { signup, signIn, emailVerify };

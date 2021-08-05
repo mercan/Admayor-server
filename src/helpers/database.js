@@ -1,7 +1,6 @@
 const config = require("../config/index");
 const mongoose = require("mongoose");
 
-console.log(config);
 module.exports = () => {
   mongoose.connect(config.databaseURL, {
     useNewUrlParser: true,

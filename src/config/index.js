@@ -20,9 +20,17 @@ module.exports = {
         max: Number(process.env.RATE_LIMIT_AUTH_SIGNUP_MAX),
         timeWindow: Number(process.env.RATE_LIMIT_AUTH_SIGNUP_TIME_WINDOW),
       },
+
       signIn: {
         max: Number(process.env.RATE_LIMIT_AUTH_SIGNIN_MAX),
         timeWindow: Number(process.env.RATE_LIMIT_AUTH_SIGNIN_TIME_WINDOW),
+      },
+
+      emailVerify: {
+        max: Number(process.env.RATE_LIMIT_AUTH_EMAIL_VERIFY_MAX),
+        timeWindow: Number(
+          process.env.RATE_LIMIT_AUTH_EMAIL_VERIFY_TIME_WINDOW
+        ),
       },
     },
   },

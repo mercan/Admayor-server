@@ -24,6 +24,17 @@ const routes = [
     },
     handler: authController.signIn,
   },
+  {
+    method: "GET",
+    url: "/auth/emailVerify",
+    config: {
+      rateLimit: {
+        max: config.rateLimit.auth.emailVerify.max,
+        timeWindow: config.rateLimit.auth.emailVerify.timeWindow,
+      },
+    },
+    handler: authController.emailVerify,
+  },
 ];
 
 module.exports = routes;
