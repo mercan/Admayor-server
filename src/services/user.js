@@ -1,8 +1,8 @@
 const { randomBytes } = require("crypto");
-const sendEmailVerification = require("../utils/sendEmailVerification");
 const createToken = require("../utils/createToken.js");
 const userModel = require("../models/user");
-const RedisService = require("./Redis");
+const RedisService = require("./redis");
+const EmailService = require("./email");
 
 class UserService {
   constructor({ RedisService, userModel }) {
@@ -72,7 +72,7 @@ class UserService {
 
   async createEmailVerificationCode({ _id: userId, email }) {
     const code = this.generateEmailVerificationCode(userId);
-    sendEmailVerification(email, code);
+    EmailService.sendVerificationEmail(email, code);
 
     return await this.client.set(
       `emailVerificationCode:${userId}`,
