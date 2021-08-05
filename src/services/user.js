@@ -1,4 +1,5 @@
 const { randomBytes } = require("crypto");
+const sendEmailVerification = require("../utils/sendEmailVerification");
 const createToken = require("../utils/createToken.js");
 const userModel = require("../models/user");
 const RedisService = require("./Redis");
@@ -16,7 +17,11 @@ class UserService {
 
       return { token: createToken(userRecord) };
     } catch (err) {
-      return { errorCode: err.code };
+      console.error("Error:", err);
+
+      if (err.code) {
+        return { errorCode: err.code };
+      }
     }
   }
 
@@ -45,8 +50,8 @@ class UserService {
     const correctCode = await this.getEmailVerificationCode(userId);
 
     if (
-      userRecord.emailVerified ||
       !userRecord ||
+      userRecord.emailVerified ||
       !correctCode ||
       emailVerificationCode !== correctCode
     ) {
@@ -65,8 +70,9 @@ class UserService {
     return `${userId}:${randomBytes(128).toString("hex")}`;
   }
 
-  async createEmailVerificationCode({ _id: userId }) {
+  async createEmailVerificationCode({ _id: userId, email }) {
     const code = this.generateEmailVerificationCode(userId);
+    sendEmailVerification(email, code);
 
     return await this.client.set(
       `emailVerificationCode:${userId}`,

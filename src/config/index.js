@@ -2,6 +2,7 @@ require("dotenv").config();
 
 module.exports = {
   port: process.env.PORT || 3000,
+  base_url: process.env.BASE_URL || "http://localhost:3000",
   databaseURL: process.env.MONGODB_URI,
   jwtSecretKey: process.env.JWT_SECRET,
   jwtAlgorithm: process.env.JWT_ALGO,
@@ -13,6 +14,12 @@ module.exports = {
     hostname: process.env.REDIS_HOSTNAME,
     password: process.env.REDIS_PASSWORD,
     port: process.env.REDIS_PORT,
+  },
+  service: {
+    email: {
+      API_KEY: process.env.EMAIL_API_KEY,
+      from: process.env.EMAIL_FROM,
+    },
   },
   rateLimit: {
     auth: {
