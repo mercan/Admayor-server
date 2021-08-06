@@ -3,16 +3,15 @@ const UserService = require("../../services/user");
 const { SignupSchema, SignInSchema } = require("../../validation/user.schema");
 
 const signup = async (req, res) => {
-  const validation = SignupSchema.validate(req.body);
+  const { error, value: userDTO } = SignupSchema.validate(req.body);
 
-  if (validation.error) {
-    return res.status(400).json({
+  if (error) {
+    return res.status(400).send({
       statusCode: 400,
-      message: validation.error.details[0].message,
+      message: error.details[0].message,
     });
   }
 
-  const userDTO = validation.value;
   const { errorCode, token } = await UserService.Signup(userDTO);
 
   if (errorCode === 11000) {
@@ -30,16 +29,15 @@ const signup = async (req, res) => {
 };
 
 const signIn = async (req, res) => {
-  const validation = SignInSchema.validate(req.body);
+  const { error, value: userDTO } = SignInSchema.validate(req.body);
 
-  if (validation.error) {
+  if (error) {
     return res.status(400).send({
       statusCode: 400,
-      message: validation.error.details[0].message,
+      message: error.details[0].message,
     });
   }
 
-  const userDTO = validation.value;
   const { token } = await UserService.SignIn(userDTO);
 
   if (!token) {
@@ -53,6 +51,34 @@ const signIn = async (req, res) => {
     statusCode: 200,
     message: "Successfully signed in",
     token,
+  });
+};
+
+sendVerificationEmail = async (req, res) => {
+  const userRecord = await UserService.findById(req.user.id, "emailVerified");
+
+  if (!userRecord) {
+    return res.status(400).send({
+      statusCode: 400,
+      message: "Email verification failed.",
+    });
+  }
+
+  if (userRecord.emailVerified) {
+    return res.status(400).send({
+      statusCode: 400,
+      message: "Email already verified.",
+    });
+  }
+
+  await UserService.createEmailVerificationCode({
+    _id: req.user.id,
+    email: req.user.email,
+  });
+
+  return res.status(200).send({
+    statusCode: 200,
+    message: "Verification email sent.",
   });
 };
 
@@ -88,4 +114,5 @@ emailVerify = async (req, res) => {
   });
 };
 
-module.exports = { signup, signIn, emailVerify };
+// Export the routes
+module.exports = { signup, signIn, sendVerificationEmail, emailVerify };

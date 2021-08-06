@@ -33,6 +33,13 @@ module.exports = {
         timeWindow: Number(process.env.RATE_LIMIT_AUTH_SIGNIN_TIME_WINDOW),
       },
 
+      sendVerificationEmail: {
+        max: Number(process.env.RATE_LIMIT_AUTH_VERIFICATION_EMAIL_MAX),
+        timeWindow: Number(
+          process.env.RATE_LIMIT_AUTH_VERIFICATION_EMAIL_TIME_WINDOW
+        ),
+      },
+
       emailVerify: {
         max: Number(process.env.RATE_LIMIT_AUTH_EMAIL_VERIFY_MAX),
         timeWindow: Number(

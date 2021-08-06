@@ -1,0 +1,40 @@
+{
+  "tags": ["auth"],
+  "required": ["code"],
+  "querystring": {
+    "code": {
+      "type": "string",
+      "description": "Email confirmation code"
+    }
+  },
+  "response": {
+    "200": {
+      "description": "Successful response",
+      "type": "object",
+      "properties": {
+        "statusCode": {
+          "type": "number",
+          "format": "integer",
+          "default": 200
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "400": {
+      "description": "Bad request response",
+      "type": "object",
+      "properties": {
+        "statusCode": {
+          "type": "number",
+          "format": "integer",
+          "default": 400
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

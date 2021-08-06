@@ -93,6 +93,10 @@ class UserService {
       });
     });
   }
+
+  async findById(userId, selectFields) {
+    return await this.userModel.findById(userId, selectFields);
+  }
 }
 
 const Dependencies = {

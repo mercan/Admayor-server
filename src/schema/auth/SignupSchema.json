@@ -1,0 +1,72 @@
+{
+  "tags": ["auth"],
+  "body": {
+    "type": "object",
+    "required": ["email", "username", "password"],
+    "properties": {
+      "email": {
+        "type": "string",
+        "format": "email",
+        "minLength": 3,
+        "maxLength": 100
+      },
+      "username": {
+        "type": "string",
+        "minLength": 4,
+        "maxLength": 16
+      },
+      "password": {
+        "type": "string",
+        "minLength": 6,
+        "maxLength": 100
+      }
+    }
+  },
+  "response": {
+    "200": {
+      "description": "Successful response",
+      "type": "object",
+      "properties": {
+        "statusCode": {
+          "type": "number",
+          "format": "integer",
+          "default": 200
+        },
+        "message": {
+          "type": "string"
+        },
+        "token": {
+          "type": "string"
+        }
+      }
+    },
+    "400": {
+      "description": "Bad request response",
+      "type": "object",
+      "properties": {
+        "statusCode": {
+          "type": "number",
+          "format": "integer",
+          "default": 400
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "409": {
+      "description": "Bad request response",
+      "type": "object",
+      "properties": {
+        "statusCode": {
+          "type": "number",
+          "format": "integer",
+          "default": 409
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

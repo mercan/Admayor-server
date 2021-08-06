@@ -9,7 +9,7 @@ const User = new Schema(
       unique: true,
       required: true,
       lowercase: true,
-      maxLength: 50,
+      maxLength: 100,
     },
 
     username: {
@@ -25,7 +25,7 @@ const User = new Schema(
       type: String,
       required: true,
       minLength: 6,
-      maxLength: 50,
+      maxLength: 100,
     },
 
     userType: {
@@ -39,7 +39,10 @@ const User = new Schema(
       default: false,
     },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    versionKey: false,
+  }
 );
 
 // Static Methods
