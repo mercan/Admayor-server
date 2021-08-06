@@ -4,12 +4,12 @@
   "querystring": {
     "code": {
       "type": "string",
-      "description": "Email confirmation code"
+      "description": "Email confirmation code."
     }
   },
   "response": {
     "200": {
-      "description": "Successful response",
+      "description": "Email verified successfully.",
       "type": "object",
       "properties": {
         "statusCode": {

@@ -3,8 +3,8 @@ const { randomBytes } = require("crypto");
 const createToken = require("../utils/createToken.js");
 const userModel = require("../models/user");
 
-const RedisService = require("./redis");
-const EmailService = require("./email");
+const RedisService = require("./RedisService");
+const EmailService = require("./EmailService");
 
 class UserService {
   constructor({ RedisService, userModel }) {
@@ -19,9 +19,7 @@ class UserService {
 
       return { token: createToken(userRecord) };
     } catch (err) {
-      if (err.code) {
-        return { errorCode: err.code };
-      }
+      return { errorCode: err.code || err };
     }
   }
 

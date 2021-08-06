@@ -18,7 +18,7 @@ module.exports = (req, res, next) => {
   try {
     const decode = jwt.verify(bearerToken, config.jwtSecretKey);
     req.user = decode;
-  } catch (err) {
+  } catch {
     return res.code(401).send({
       statusCode: 401,
       message: "Invalid token!",

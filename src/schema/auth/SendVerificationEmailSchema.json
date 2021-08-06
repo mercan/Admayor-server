@@ -3,7 +3,7 @@
   "security": [{ "BearerAuth": [] }],
   "response": {
     "200": {
-      "description": "Successful response",
+      "description": "Verification email sent.",
       "type": "object",
       "properties": {
         "statusCode": {

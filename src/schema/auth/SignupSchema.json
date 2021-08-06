@@ -24,7 +24,7 @@
   },
   "response": {
     "200": {
-      "description": "Successful response",
+      "description": "Successfully signed up.",
       "type": "object",
       "properties": {
         "statusCode": {
@@ -55,7 +55,7 @@
       }
     },
     "409": {
-      "description": "Bad request response",
+      "description": "User already exists.",
       "type": "object",
       "properties": {
         "statusCode": {

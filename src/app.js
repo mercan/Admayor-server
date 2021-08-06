@@ -61,7 +61,7 @@ function build(opts = {}) {
               _id: { type: "string" },
               email: { type: "string", format: "email" },
               username: { type: "string" },
-              password: { type: "string" },
+              password: { type: "string", format: "password" },
               userType: {
                 type: "string",
                 enum: ["admin", "user"],

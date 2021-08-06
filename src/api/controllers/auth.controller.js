@@ -1,6 +1,7 @@
-const UserService = require("../../services/user");
+const UserService = require("../../services/UserService");
 // User Validation
 const { SignupSchema, SignInSchema } = require("../../validation/user.schema");
+const unavailableUsernames = require("../../utils/unavailableUsername.json");
 
 const signup = async (req, res) => {
   const { error, value: userDTO } = SignupSchema.validate(req.body);
@@ -12,10 +13,10 @@ const signup = async (req, res) => {
     });
   }
 
-  if (["administrator", "admin", "owner"].includes(userDTO.username)) {
+  if (unavailableUsernames.includes(userDTO.username)) {
     return res.status(400).send({
       statusCode: 400,
-      message: "Username cannot be an Administrator, Admin or Owner",
+      message: "Username is not available.",
     });
   }
 
@@ -24,13 +25,13 @@ const signup = async (req, res) => {
   if (errorCode === 11000) {
     return res.status(409).send({
       statusCode: 409,
-      message: "User already exists",
+      message: "User already exists.",
     });
   }
 
   return res.status(200).send({
     statusCode: 200,
-    message: "Successfully signed up",
+    message: "Successfully signed up.",
     token,
   });
 };
@@ -56,7 +57,7 @@ const signIn = async (req, res) => {
 
   return res.code(200).send({
     statusCode: 200,
-    message: "Successfully signed in",
+    message: "Successfully signed in.",
     token,
   });
 };

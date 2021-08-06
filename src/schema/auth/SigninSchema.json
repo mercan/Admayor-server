@@ -19,7 +19,7 @@
   },
   "response": {
     "200": {
-      "description": "Successful response",
+      "description": "Successfully signed in.",
       "type": "object",
       "properties": {
         "statusCode": {
