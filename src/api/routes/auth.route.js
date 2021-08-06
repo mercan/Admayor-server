@@ -11,7 +11,7 @@ const emailVerifySchema = require("../../schema/auth/EmailVerifySchema.json");
 const routes = [
   {
     method: "POST",
-    url: "/auth/signup/",
+    url: `/${config.apiVersion}/${config.authRoutePath}/signup`,
     schema: signupSchema,
     config: {
       rateLimit: {
@@ -23,7 +23,7 @@ const routes = [
   },
   {
     method: "POST",
-    url: "/auth/signIn/",
+    url: `/${config.apiVersion}/${config.authRoutePath}/signin`,
     schema: signinSchema,
     config: {
       rateLimit: {
@@ -35,7 +35,7 @@ const routes = [
   },
   {
     method: "POST",
-    url: "/auth/sendVerificationEmail/",
+    url: `/${config.apiVersion}/${config.authRoutePath}/sendVerificationEmail`,
     schema: sendVerificationEmailSchema,
     config: {
       rateLimit: {
@@ -51,7 +51,7 @@ const routes = [
   },
   {
     method: "POST",
-    url: "/auth/emailVerify",
+    url: `/${config.apiVersion}/${config.authRoutePath}/emailVerify`,
     schema: emailVerifySchema,
     config: {
       rateLimit: {

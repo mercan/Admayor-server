@@ -53,5 +53,7 @@ module.exports = {
       },
     },
   },
-  swaggerRoutePrefix: process.env.SWAGGER_ROUTE_PREFIX,
+  swaggerRoutePrefix: "/documentation",
+  apiVersion: "v1",
+  authRoutePath: "auth",
 };
