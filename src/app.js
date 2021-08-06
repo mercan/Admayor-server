@@ -73,13 +73,12 @@ function build(opts = {}) {
             },
           },
         },
-      },
-      securitySchemes: {
-        BearerToken: {
-          type: "apiKey",
-          name: "Authorization",
-          description: "Value: Bearer {jwt}",
-          in: "header",
+        securitySchemes: {
+          BearerAuth: {
+            type: "http",
+            scheme: "bearer",
+            bearerFormat: "JWT",
+          },
         },
       },
     },

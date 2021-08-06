@@ -1,6 +1,6 @@
 {
   "tags": ["auth"],
-  "security": [{ "Bearer": [] }],
+  "security": [{ "BearerAuth": [] }],
   "response": {
     "200": {
       "description": "Successful response",
