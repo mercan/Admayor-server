@@ -1,6 +1,8 @@
+const ObjectId = require("mongoose").Types.ObjectId;
 const { randomBytes } = require("crypto");
 const createToken = require("../utils/createToken.js");
 const userModel = require("../models/user");
+
 const RedisService = require("./redis");
 const EmailService = require("./email");
 
@@ -40,7 +42,11 @@ class UserService {
   }
 
   async VerifyEmail(userId, emailVerificationCode) {
-    const userRecord = await this.userModel.findOne(
+    if (!this.isValidId(userId)) {
+      return false;
+    }
+
+    const userRecord = await this.userModel.findById(
       { _id: userId },
       "emailVerified"
     );
@@ -68,9 +74,9 @@ class UserService {
     return `${userId}:${randomBytes(128).toString("hex")}`;
   }
 
-  async createEmailVerificationCode({ _id: userId, email }) {
+  async createEmailVerificationCode({ _id: userId, email, username }) {
     const code = this.generateEmailVerificationCode(userId);
-    EmailService.sendVerificationEmail(email, code);
+    EmailService.sendVerificationEmail(email, username, code);
 
     return await this.client.set(
       `emailVerificationCode:${userId}`,
@@ -94,6 +100,10 @@ class UserService {
 
   async findById(userId, selectFields) {
     return await this.userModel.findById(userId, selectFields);
+  }
+
+  isValidId(userId) {
+    return ObjectId.isValid(userId);
   }
 }
 

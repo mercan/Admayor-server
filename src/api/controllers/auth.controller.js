@@ -12,6 +12,13 @@ const signup = async (req, res) => {
     });
   }
 
+  if (["administrator", "admin", "owner"].includes(userDTO.username)) {
+    return res.status(400).send({
+      statusCode: 400,
+      message: "Username cannot be an Administrator, Admin or Owner",
+    });
+  }
+
   const { errorCode, token } = await UserService.Signup(userDTO);
 
   if (errorCode === 11000) {
@@ -74,6 +81,7 @@ sendVerificationEmail = async (req, res) => {
   await UserService.createEmailVerificationCode({
     _id: req.user.id,
     email: req.user.email,
+    username: req.user.username,
   });
 
   return res.status(200).send({
