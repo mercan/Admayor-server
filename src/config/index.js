@@ -1,8 +1,12 @@
 require("dotenv").config();
 
+const port = process.env.PORT || 3000;
+const env = process.env.NODE_ENV;
+
 module.exports = {
-  port: process.env.PORT || 3000,
-  base_url: process.env.BASE_URL || "http://localhost:3000",
+  env,
+  port,
+  host: `${process.env.HOST}:${port}` || `http://localhost:${port}`,
   databaseURL: process.env.MONGODB_URI,
   jwtSecretKey: process.env.JWT_SECRET,
   jwtAlgorithm: process.env.JWT_ALGO,
@@ -48,4 +52,5 @@ module.exports = {
       },
     },
   },
+  swaggerRoutePrefix: process.env.SWAGGER_ROUTE_PREFIX,
 };

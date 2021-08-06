@@ -1,3 +1,4 @@
+const config = require("./config/index");
 const fastify = require("fastify");
 
 // Database connection
@@ -18,55 +19,63 @@ function build(opts = {}) {
     },
   });
   app.register(require("fastify-swagger"), {
-    routePrefix: "/documentation",
-    swagger: {
+    routePrefix: config.swaggerRoutePrefix,
+    openapi: {
       info: {
-        title: "AdMayor swagger",
-        description: "AdMayor Fastify swagger API",
-        version: "1.0.0",
+        title: "AdMayor API",
+        version: "0.0.1",
+        contact: {
+          name: "İbrahim Can Mercan",
+          email: "imrcn77@gmail.com",
+        },
       },
-      externalDocs: {
-        url: "https://swagger.io",
-        description: "Find more info here",
-      },
+      servers: [
+        {
+          url: config.host,
+          description:
+            config.env === "development" ? "Development" : "Production",
+        },
+      ],
       host: "localhost",
-      schemes: ["https", "http"],
+      schemes: ["http", "https"],
       consumes: ["application/json"],
       produces: ["application/json"],
       tags: [
         { name: "auth", description: "Authentication related end-points" },
       ],
-      definitions: {
-        User: {
-          type: "object",
-          required: [
-            "_id",
-            "email",
-            "username",
-            "password",
-            "userType",
-            "emailVerified",
-            "createdAt",
-            "updatedAt",
-          ],
-          properties: {
-            _id: { type: "string" },
-            email: { type: "string", format: "email" },
-            username: { type: "string" },
-            password: { type: "string" },
-            userType: {
-              type: "string",
-              enum: ["admin", "user"],
-              default: "user",
+      components: {
+        schemas: {
+          User: {
+            type: "object",
+            required: [
+              "_id",
+              "email",
+              "username",
+              "password",
+              "userType",
+              "emailVerified",
+              "createdAt",
+              "updatedAt",
+            ],
+            properties: {
+              _id: { type: "string" },
+              email: { type: "string", format: "email" },
+              username: { type: "string" },
+              password: { type: "string" },
+              userType: {
+                type: "string",
+                enum: ["admin", "user"],
+                default: "user",
+              },
+              emailVerified: { type: "boolean", default: false },
+              createdAt: { type: "string", format: "date-time" },
+              updatedAt: { type: "string", format: "date-time" },
             },
-            emailVerified: { type: "boolean", default: false },
-            createdAt: { type: "string", format: "date-time" },
-            updatedAt: { type: "string", format: "date-time" },
           },
         },
       },
-      securityDefinitions: {
-        Bearer: {
+      securitySchemes: {
+        BearerToken: {
           type: "apiKey",
           name: "Authorization",
           description: "Value: Bearer {jwt}",
@@ -74,12 +83,7 @@ function build(opts = {}) {
         },
       },
     },
-    uiConfig: {
-      docExpansion: "full",
-      deepLinking: false,
-    },
     staticCSP: true,
-    transformStaticCSP: (header) => header,
     exposeRoute: true,
   });
 
