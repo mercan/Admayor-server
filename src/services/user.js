@@ -17,8 +17,6 @@ class UserService {
 
       return { token: createToken(userRecord) };
     } catch (err) {
-      console.error("Error:", err);
-
       if (err.code) {
         return { errorCode: err.code };
       }

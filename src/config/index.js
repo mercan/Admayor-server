@@ -6,7 +6,8 @@ const env = process.env.NODE_ENV;
 module.exports = {
   env,
   port,
-  host: env === "development" ? `localhost:${port}` : process.env.HOST,
+  host:
+    env === "development" ? `${process.env.HOST}:${port}` : process.env.HOST,
   databaseURL: process.env.MONGODB_URI,
   jwtSecretKey: process.env.JWT_SECRET,
   jwtAlgorithm: process.env.JWT_ALGO,
