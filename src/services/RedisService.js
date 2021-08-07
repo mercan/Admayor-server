@@ -1,13 +1,18 @@
 const config = require("../config/index");
 const redis = require("redis");
+const logger = require("../helpers/logger");
 
 class RedisService {
   constructor(options) {
     this.options = options;
     this.client = redis.createClient(this.options);
 
-    this.client.on("connect", () => console.log("Redis Connected!"));
-    this.client.on("error", console.error);
+    this.client.on("connect", () =>
+      logger.info("Connected to redis", { service: "Redis" })
+    );
+    this.client.on("error", (error) => {
+      logger.error(`Redis error: ${error}`, { service: "Redis" });
+    });
   }
 
   init() {

@@ -56,4 +56,5 @@ module.exports = {
   swaggerRoutePrefix: "/documentation",
   apiVersion: "v1",
   authRoutePath: "auth",
+  dateFormat: "YYYY-MM-DD HH:mm:ss",
 };

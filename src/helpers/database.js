@@ -1,5 +1,6 @@
 const config = require("../config/index");
 const mongoose = require("mongoose");
+const logger = require("./logger");
 
 module.exports = () => {
   mongoose.connect(config.databaseURL, {
@@ -9,8 +10,10 @@ module.exports = () => {
     useUnifiedTopology: true,
   });
 
-  mongoose.connection.on("open", () => console.log("MongoDB: Connected!"));
+  mongoose.connection.on("open", () =>
+    logger.info("Connection successful", { service: "MongoDB" })
+  );
   mongoose.connection.on("error", (error) =>
-    console.error("MongoDB: Error ", error)
+    logger.error(`Connection failed: ${error}`, { service: "MongoDB" })
   );
 };

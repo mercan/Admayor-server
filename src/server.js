@@ -1,11 +1,8 @@
 const config = require("./config/index");
+const logger = require("./helpers/logger");
+
 const server = require("./app")({
-  logger: {
-    level: config.logger.level,
-    prettyPrint: {
-      colorize: true,
-    },
-  },
+  logger,
   trustProxy: true,
 });
 

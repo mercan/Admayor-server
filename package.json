@@ -20,6 +20,7 @@
     "@sendgrid/mail": "^7.4.5",
     "bcrypt": "^5.0.1",
     "crypto": "^1.0.1",
+    "dayjs": "^1.10.6",
     "dotenv": "^10.0.0",
     "fastify": "^3.20.1",
     "fastify-formbody": "^5.1.0",
@@ -30,7 +31,9 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.13.5",
     "pino-pretty": "^5.1.2",
-    "redis": "^3.1.2"
+    "redis": "^3.1.2",
+    "winston": "^3.3.3",
+    "winston-daily-rotate-file": "^4.5.5"
   },
   "engines": {
     "node": ">=15.x",

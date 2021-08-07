@@ -2,9 +2,10 @@ const ObjectId = require("mongoose").Types.ObjectId;
 const { randomBytes } = require("crypto");
 const createToken = require("../utils/createToken.js");
 const userModel = require("../models/user");
+const logger = require("../helpers/logger");
 
 const RedisService = require("./RedisService");
-const EmailService = require("./EmailService");
+const MailService = require("./MailService");
 
 class UserService {
   constructor({ RedisService, userModel }) {
@@ -19,6 +20,7 @@ class UserService {
 
       return { token: createToken(userRecord) };
     } catch (err) {
+      logger.error(`User signed up failed: ${err}`, { serivce: "User" });
       return { errorCode: err.code || err };
     }
   }
@@ -74,7 +76,11 @@ class UserService {
 
   async createEmailVerificationCode({ _id: userId, email, username }) {
     const code = this.generateEmailVerificationCode(userId);
-    EmailService.sendVerificationEmail(email, username, code);
+    MailService.sendMail("registration", {
+      email,
+      username,
+      emailVerificationCode: code,
+    });
 
     return await this.client.set(
       `emailVerificationCode:${userId}`,
