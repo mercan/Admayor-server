@@ -7,6 +7,8 @@ const signupSchema = require("../../schema/auth/SignupSchema.json");
 const signinSchema = require("../../schema/auth/SigninSchema.json");
 const sendVerificationEmailSchema = require("../../schema/auth/SendVerificationEmailSchema.json");
 const emailVerifySchema = require("../../schema/auth/EmailVerifySchema.json");
+const resetPasswordSchema = require("../../schema/auth/ResetPasswordSchema.json");
+const sendResetPasswordEmailSchema = require("../../schema/auth/SendResetPasswordEmailSchema.json");
 
 const routes = [
   {
@@ -35,6 +37,18 @@ const routes = [
   },
   {
     method: "POST",
+    url: `/${config.apiVersion}/${config.authRoutePath}/emailVerify`,
+    schema: emailVerifySchema,
+    config: {
+      rateLimit: {
+        max: config.rateLimit.auth.emailVerify.max,
+        timeWindow: config.rateLimit.auth.emailVerify.timeWindow,
+      },
+    },
+    handler: authController.emailVerify,
+  },
+  {
+    method: "POST",
     url: `/${config.apiVersion}/${config.authRoutePath}/sendVerificationEmail`,
     schema: sendVerificationEmailSchema,
     config: {
@@ -51,15 +65,21 @@ const routes = [
   },
   {
     method: "POST",
-    url: `/${config.apiVersion}/${config.authRoutePath}/emailVerify`,
-    schema: emailVerifySchema,
+    url: `/${config.apiVersion}/${config.authRoutePath}/resetPassword`,
+    schema: resetPasswordSchema,
     config: {
       rateLimit: {
-        max: config.rateLimit.auth.emailVerify.max,
-        timeWindow: config.rateLimit.auth.emailVerify.timeWindow,
+        max: config.rateLimit.auth.resetPassword.max,
+        timeWindow: config.rateLimit.auth.resetPassword.timeWindow,
       },
     },
-    handler: authController.emailVerify,
+    handler: authController.resetPassword,
+  },
+  {
+    method: "GET",
+    url: `/${config.apiVersion}/${config.authRoutePath}/sendPasswordResetEmail`,
+    schema: sendResetPasswordEmailSchema,
+    handler: authController.sendPasswordResetEmail,
   },
 ];
 

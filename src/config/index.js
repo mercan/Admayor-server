@@ -12,9 +12,6 @@ module.exports = {
   jwtSecretKey: process.env.JWT_SECRET,
   jwtAlgorithm: process.env.JWT_ALGO,
   jwtExpiresIn: process.env.JWT_EXPIRES_IN,
-  logger: {
-    level: process.env.LOG_LEVEL || "error",
-  },
   redis: {
     hostname: process.env.REDIS_HOSTNAME,
     password: process.env.REDIS_PASSWORD,
@@ -49,6 +46,13 @@ module.exports = {
         max: Number(process.env.RATE_LIMIT_AUTH_EMAIL_VERIFY_MAX),
         timeWindow: Number(
           process.env.RATE_LIMIT_AUTH_EMAIL_VERIFY_TIME_WINDOW
+        ),
+      },
+
+      resetPassword: {
+        max: Number(process.env.RATE_LIMIT_AUTH_RESET_PASSWORD_MAX),
+        timeWindow: Number(
+          process.env.RATE_LIMIT_AUTH_RESET_PASSWORD_TIME_WINDOW
         ),
       },
     },
