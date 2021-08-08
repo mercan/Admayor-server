@@ -22,9 +22,7 @@ const signup = async (req, res) => {
   }
 
   if (
-    unavailableEmails.some((email) =>
-      email.includes(userDTO.email.split("@")[1])
-    )
+    unavailableEmails.some((email) => email === userDTO.email.split("@")[1])
   ) {
     return res.status(400).send({
       statusCode: 400,
