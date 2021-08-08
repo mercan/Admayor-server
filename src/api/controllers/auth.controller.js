@@ -6,8 +6,10 @@ const {
   PasswordResetSchema,
   PasswordResetValidateSchema,
 } = require("../../validation/user.schema");
-const unavailableUsernames = require("../../utils/unavailableUsername.json");
 const verifyToken = require("../../utils/verifyToken");
+
+const unavailableUsernames = require("../../utils/unavailableUsername.json");
+const unavailableEmails = require("../../utils/unavailableEmail.json");
 
 const signup = async (req, res) => {
   const { error, value: userDTO } = SignupSchema.validate(req.body);
@@ -16,6 +18,17 @@ const signup = async (req, res) => {
     return res.status(400).send({
       statusCode: 400,
       message: error.details[0].message,
+    });
+  }
+
+  if (
+    unavailableEmails.some((email) =>
+      email.includes(userDTO.email.split("@")[1])
+    )
+  ) {
+    return res.status(400).send({
+      statusCode: 400,
+      message: "Email is not available.",
     });
   }
 
