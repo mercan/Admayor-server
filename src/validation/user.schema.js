@@ -6,7 +6,7 @@ const options = {
   allowUnknown: false,
 };
 
-const SignupSchema = Joi.object()
+const RegisterSchema = Joi.object()
   .keys({
     email: Joi.string()
       .required()
@@ -18,7 +18,6 @@ const SignupSchema = Joi.object()
         "string.max": "Email must be 100 characters or less.",
         "string.email": "Please enter a valid email address.",
         "string.empty": "Please enter your email address.",
-        "string.trim": "Please enter your email address.",
         "any.required": "Please enter your email address.",
       }),
 
@@ -32,7 +31,6 @@ const SignupSchema = Joi.object()
         "string.min": "Please enter a username with at least 4 characters.",
         "string.max": "Please enter a username with at most 16 characters.",
         "string.empty": "Please enter your username.",
-        "string.trim": "Please enter your username.",
         "any.required": "Please enter your username.",
       }),
 
@@ -49,13 +47,12 @@ const SignupSchema = Joi.object()
     "object.base": "Please fill out all required fields.",
   });
 
-const SignInSchema = Joi.object()
+const LoginSchema = Joi.object()
   .keys({
     email: Joi.string().required().trim().lowercase().email().max(50).messages({
       "string.max": "Email must be 50 characters or less.",
       "string.email": "Please enter a valid email address.",
       "string.empty": "Please enter your email address.",
-      "string.trim": "Please enter your email address.",
       "any.required": "Please enter your email address.",
     }),
 
@@ -72,32 +69,49 @@ const SignInSchema = Joi.object()
     "object.base": "Please fill out all required fields.",
   });
 
-const PasswordResetSchema = Joi.object().keys({
-  email: Joi.string().required().trim().lowercase().email().max(100).messages({
-    "string.max": "Email must be 100 characters or less.",
-    "string.email": "Please enter a valid email address.",
-    "string.empty": "Please enter your email address.",
-    "string.trim": "Please enter your email address.",
-    "any.required": "Please enter your email address.",
-  }),
-});
+const PasswordResetSchema = Joi.object()
+  .keys({
+    email: Joi.string()
+      .required()
+      .trim()
+      .lowercase()
+      .email()
+      .max(100)
+      .messages({
+        "string.max": "Email must be 100 characters or less.",
+        "string.email": "Please enter a valid email address.",
+        "string.empty": "Please enter your email address.",
+        "any.required": "Please enter your email address.",
+      }),
+  })
+  .required()
+  .options(options)
+  .messages({
+    "object.base": "Please fill out all required fields.",
+  });
 
-const PasswordResetValidateSchema = Joi.object().keys({
-  token: Joi.string().required().messages({
-    "any.required": "Token is required.",
-  }),
+const PasswordResetValidateSchema = Joi.object()
+  .keys({
+    token: Joi.string().required().messages({
+      "any.required": "Token is required.",
+    }),
 
-  password: Joi.string().required().min(6).max(50).messages({
-    "string.min": "Please enter a password with at least 6 characters.",
-    "string.max": "Please enter a password with at most 50 characters.",
-    "string.empty": "Please enter your password.",
-    "any.required": "Please enter your password.",
-  }),
-});
+    password: Joi.string().required().min(6).max(50).messages({
+      "string.min": "Please enter a password with at least 6 characters.",
+      "string.max": "Please enter a password with at most 50 characters.",
+      "string.empty": "Please enter your password.",
+      "any.required": "Please enter your password.",
+    }),
+  })
+  .required()
+  .options(options)
+  .messages({
+    "object.base": "Please fill out all required fields.",
+  });
 
 module.exports = {
-  SignupSchema,
-  SignInSchema,
+  RegisterSchema,
+  LoginSchema,
   PasswordResetSchema,
   PasswordResetValidateSchema,
 };

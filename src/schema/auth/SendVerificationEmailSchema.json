@@ -1,6 +1,15 @@
 {
   "tags": ["auth"],
-  "security": [{ "BearerAuth": [] }],
+  "query": {
+    "type": "object",
+    "required": ["token"],
+    "properties": {
+      "token": {
+        "type": "string",
+        "description": "The token to use for authentication. (JWT Token)"
+      }
+    }
+  },
   "response": {
     "200": {
       "description": "Verification email sent.",

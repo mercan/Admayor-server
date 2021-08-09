@@ -13,41 +13,47 @@ class UserService {
     this.userModel = userModel;
   }
 
-  async Signup(user) {
+  async Register(user) {
     try {
-      const userRecord = await this.userModel.create(user);
-      const token = createToken(userRecord);
-      await this.createEmailVerificationCode(userRecord, token);
+      const User = await this.userModel.create(user);
+      const token = createToken(User);
+      await this.createEmailVerification(User, token);
 
-      return { token };
+      return {
+        message: "Successfully signed up.",
+        token,
+      };
     } catch (err) {
       logger.error(`User signed up failed: ${err}`, { serivce: "User" });
-      return { errorCode: err.code || err };
+      return { error: "User already exists." };
     }
   }
 
-  async SignIn({ email, password }) {
+  async Login({ email, password }) {
     const userRecord = await this.userModel.findOne({ email });
 
     if (!userRecord) {
-      return false;
+      return { error: "Login failed; Invalid email or password." };
     }
 
     const isMatch = userRecord.comparePassword(password);
 
     if (!isMatch) {
-      return false;
+      return { error: "Login failed; Invalid email or password." };
     }
 
-    return { token: createToken(userRecord) };
+    return {
+      message: "Successfully signed in.",
+      token: createToken(userRecord),
+    };
   }
 
   async VerifyEmail(userId, emailVerificationCode) {
     if (!this.isValidId(userId)) {
-      return false;
+      return { error: "Email verification failed." };
     }
 
-    const userRecord = await this.userModel.findById(
+    const User = await this.userModel.findById(
       { _id: userId },
       "emailVerified"
     );
@@ -58,84 +64,94 @@ class UserService {
     );
 
     if (
-      !userRecord ||
-      userRecord.emailVerified ||
+      !User ||
+      User.emailVerified ||
       !correctCode ||
       emailVerificationCode !== correctCode
     ) {
-      return false;
+      return { error: "Email verification failed." };
     }
 
     await this.client.del(`emailVerificationCode:${userId}`);
-    return await this.userModel.updateOne(
+    await this.userModel.updateOne(
       { _id: userId },
       { $set: { emailVerified: true } }
     );
+
+    return { message: "Email verified successfully." };
   }
 
   async ResetPassword({ userId, password, token }) {
     if (!this.isValidId(userId)) {
-      return false;
+      return { error: "Your password could not be changed" };
     }
 
-    const userRecord = await this.userModel.findById(userId, "password");
+    const User = await this.userModel.findById(userId, "password");
     const correctToken = await this.getRedisToken("passwordResetCode", userId);
 
-    if (!userRecord || !correctToken || token !== correctToken) {
-      return false;
+    if (!User || !correctToken || token !== correctToken) {
+      return { error: "Your password could not be changed." };
     }
 
-    const isMatch = userRecord.comparePassword(password);
+    const isMatch = User.comparePassword(password);
 
     if (isMatch) {
       return {
-        message: "The new password cannot be the same as the old password.",
+        error: "The new password cannot be the same as the old password.",
       };
     }
 
     await this.client.del(`passwordResetCode:${userId}`);
-    return await this.userModel.passwordUpdate(userId, password);
+    await User.resetPassword(password);
+
+    return { message: "Your password has been changed." };
   }
 
   async SendPasswordResetEmail(email) {
-    const userRecord = await this.userModel.findOne({ email });
+    const User = await this.userModel.findOne({ email });
 
-    if (!userRecord) {
-      return false;
+    if (User) {
+      const token = `${userId}:${randomBytes(32).toString("hex")}`;
+
+      await MailService.sendMail("resetPassword", {
+        email,
+        passwordResetCode: token,
+      });
+
+      await this.client.set(
+        `passwordResetCode:${userId}`,
+        token,
+        "EX",
+        60 * 60 * 24
+      );
+
+      return { message: "Password reset email sent." };
     }
 
-    return await this.createPasswordResetCode(userRecord);
+    return { error: "Password reset email failed." };
   }
 
-  async createPasswordResetCode({ _id: userId, email }) {
-    const token = `${userId}:${randomBytes(32).toString("hex")}`;
-
-    MailService.sendMail("resetPassword", {
-      email,
-      passwordResetCode: token,
-    });
-
-    return await this.client.set(
-      `passwordResetCode:${userId}`,
-      token,
-      "EX",
-      60 * 60 * 24
-    );
-  }
-
-  async createEmailVerificationCode({ _id: userId, email, username }, token) {
-    MailService.sendMail("registration", {
-      email,
-      username,
+  async createEmailVerification(user, token) {
+    await MailService.sendMail("registration", {
+      email: user.email,
+      username: user.username,
       emailVerificationCode: token,
     });
 
     return await this.client.set(
-      `emailVerificationCode:${userId}`,
+      `emailVerificationCode:${user._id}`,
       token,
       "EX",
       60 * 60 * 24
     );
+  }
+
+  getUser(userId, selectFileds) {
+    if (this.isValidId(userId)) {
+      return this.userModel.findById(userId, selectFileds);
+    }
+
+    return null;
   }
 
   getRedisToken(folderName, userId) {

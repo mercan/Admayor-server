@@ -1,18 +1,18 @@
 const UserService = require("../../services/UserService");
-// User Validation
-const {
-  SignupSchema,
-  SignInSchema,
-  PasswordResetSchema,
-  PasswordResetValidateSchema,
-} = require("../../validation/user.schema");
 const verifyToken = require("../../utils/verifyToken");
-
 const unavailableUsernames = require("../../utils/unavailableUsername.json");
 const unavailableEmails = require("../../utils/unavailableEmail.json");
 
-const signup = async (req, res) => {
-  const { error, value: userDTO } = SignupSchema.validate(req.body);
+// User Validation
+const {
+  RegisterSchema,
+  LoginSchema,
+  PasswordResetSchema,
+  PasswordResetValidateSchema,
+} = require("../../validation/user.schema");
+
+const register = async (req, res) => {
+  const { error, value: User } = RegisterSchema.validate(req.body);
 
   if (error) {
     return res.status(400).send({
@@ -21,40 +21,38 @@ const signup = async (req, res) => {
     });
   }
 
-  if (
-    unavailableEmails.some((email) => email === userDTO.email.split("@")[1])
-  ) {
+  if (unavailableEmails.some((email) => email === User.email.split("@")[1])) {
     return res.status(400).send({
       statusCode: 400,
       message: "Email is not available.",
     });
   }
 
-  if (unavailableUsernames.includes(userDTO.username)) {
+  if (unavailableUsernames.includes(User.username)) {
     return res.status(400).send({
       statusCode: 400,
       message: "Username is not available.",
     });
   }
 
-  const { errorCode, token } = await UserService.Signup(userDTO);
+  const result = await UserService.Register(User);
 
-  if (errorCode === 11000) {
+  if (result.error) {
     return res.status(409).send({
       statusCode: 409,
-      message: "User already exists.",
+      message: result.error,
     });
   }
 
   return res.status(200).send({
     statusCode: 200,
-    message: "Successfully signed up.",
-    token,
+    message: result.message,
+    token: result.token,
   });
 };
 
-const signIn = async (req, res) => {
-  const { error, value: userDTO } = SignInSchema.validate(req.body);
+const login = async (req, res) => {
+  const { error, value: User } = LoginSchema.validate(req.body);
 
   if (error) {
     return res.status(400).send({
@@ -63,31 +61,33 @@ const signIn = async (req, res) => {
     });
   }
 
-  const { token } = await UserService.SignIn(userDTO);
+  const result = await UserService.Login(User);
 
-  if (!token) {
+  if (result.error) {
     return res.status(400).send({
       statusCode: 400,
-      message: "Login failed; Invalid email or password.",
+      message: result.error,
     });
   }
 
   return res.code(200).send({
     statusCode: 200,
-    message: "Successfully signed in.",
-    token,
+    message: result.message,
+    token: result.token,
   });
 };
 
 emailVerify = async (req, res) => {
-  if (!req.query.token) {
+  const token = req.query.token;
+
+  if (!token) {
     return res.status(400).send({
       statusCode: 400,
       message: "Token is required.",
     });
   }
 
-  const user = verifyToken(req.query.token);
+  const user = verifyToken(token);
 
   if (!user) {
     return res.status(400).send({
@@ -96,43 +96,18 @@ emailVerify = async (req, res) => {
     });
   }
 
-  const result = await UserService.VerifyEmail(user.id, req.query.token);
+  const result = await UserService.VerifyEmail(user.id, token);
 
-  if (!result) {
+  if (result.error) {
     return res.status(400).send({
       statusCode: 400,
-      message: "Email verification failed.",
+      message: result.error,
     });
   }
 
   return res.status(200).send({
     statusCode: 200,
-    message: "Email verified successfully.",
-  });
-};
-
-sendPasswordResetEmail = async (req, res) => {
-  const { error, value } = PasswordResetSchema.validate(req.query);
-
-  if (error) {
-    return res.status(400).send({
-      statusCode: 400,
-      message: error.details[0].message,
-    });
-  }
-
-  const result = await UserService.SendPasswordResetEmail(value.email);
-
-  if (!result) {
-    return res.status(400).send({
-      statusCode: 400,
-      message: "Password reset email failed.",
-    });
-  }
-
-  return res.status(200).send({
-    statusCode: 200,
-    message: "Password reset email sent.",
+    message: result.message,
   });
 };
 
@@ -164,48 +139,79 @@ resetPassword = async (req, res) => {
     token: value.token,
   });
 
-  if (!result) {
+  if (result.error) {
     return res.status(400).send({
       statusCode: 400,
-      message: "Password reset failed.",
-    });
-  }
-
-  if (result.message) {
-    return res.status(400).send({
-      statusCode: 400,
-      message: result.message,
+      message: result.error,
     });
   }
 
   return res.status(200).send({
     statusCode: 200,
-    message: "Password reset successfully.",
+    message: result.message,
+  });
+};
+
+sendPasswordResetEmail = async (req, res) => {
+  const { error, value } = PasswordResetSchema.validate(req.query);
+
+  if (error) {
+    return res.status(400).send({
+      statusCode: 400,
+      message: error.details[0].message,
+    });
+  }
+
+  const result = await UserService.SendPasswordResetEmail(value.email);
+
+  if (result.error) {
+    return res.status(400).send({
+      statusCode: 400,
+      message: result.error,
+    });
+  }
+
+  return res.status(200).send({
+    statusCode: 200,
+    message: result.message,
   });
 };
 
 sendVerificationEmail = async (req, res) => {
-  const userRecord = await UserService.findById(req.user.id, "emailVerified");
+  const token = req.query.token;
 
-  if (!userRecord) {
+  if (!token) {
+    return res.status(400).send({
+      statusCode: 400,
+      message: "Token is required.",
+    });
+  }
+
+  const user = verifyToken(token);
+  const userRec = await UserService.getUser(user.id, "emailVerified");
+
+  if (!userRec) {
     return res.status(400).send({
       statusCode: 400,
       message: "Email verification failed.",
     });
   }
 
-  if (userRecord.emailVerified) {
+  if (userRec.emailVerified) {
     return res.status(400).send({
       statusCode: 400,
       message: "Email already verified.",
     });
   }
 
-  await UserService.createEmailVerificationCode({
-    _id: req.user.id,
-    email: req.user.email,
-    username: req.user.username,
-  });
+  await UserService.createEmailVerification(
+    {
+      _id: user.id,
+      email: user.email,
+      username: user.username,
+    },
+    token
+  );
 
   return res.status(200).send({
     statusCode: 200,
@@ -215,8 +221,8 @@ sendVerificationEmail = async (req, res) => {
 
 // Export the routes
 module.exports = {
-  signup,
-  signIn,
+  register,
+  login,
   emailVerify,
   sendVerificationEmail,
   resetPassword,

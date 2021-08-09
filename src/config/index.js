@@ -25,12 +25,12 @@ module.exports = {
   },
   rateLimit: {
     auth: {
-      signup: {
+      register: {
         max: Number(process.env.RATE_LIMIT_AUTH_SIGNUP_MAX),
         timeWindow: Number(process.env.RATE_LIMIT_AUTH_SIGNUP_TIME_WINDOW),
       },
 
-      signIn: {
+      login: {
         max: Number(process.env.RATE_LIMIT_AUTH_SIGNIN_MAX),
         timeWindow: Number(process.env.RATE_LIMIT_AUTH_SIGNIN_TIME_WINDOW),
       },

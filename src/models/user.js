@@ -60,6 +60,11 @@ User.statics.passwordUpdate = async function (userId, plainPassword) {
 };
 
 // Istance methods
+User.methods.resetPassword = function (plainPassword) {
+  this.password = bcrypt.hashSync(plainPassword, 10);
+  this.save();
+};
+
 User.methods.comparePassword = function (plainPassword) {
   return bcrypt.compareSync(plainPassword, this.password);
 };
