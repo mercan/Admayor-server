@@ -78,25 +78,25 @@ const login = async (req, res) => {
 };
 
 emailVerify = async (req, res) => {
-  const token = req.query.token;
+  const emailVerificationCode = req.query.code;
 
-  if (!token) {
+  if (!emailVerificationCode) {
     return res.status(400).send({
       statusCode: 400,
-      message: "Token is required.",
+      message: "Code is required.",
     });
   }
 
-  const user = verifyToken(token);
+  const [userId] = emailVerificationCode.split(":");
 
-  if (!user) {
+  if (!userId) {
     return res.status(400).send({
       statusCode: 400,
-      message: "Token is invalid.",
+      message: "Code is invalid.",
     });
   }
 
-  const result = await UserService.VerifyEmail(user.id, token);
+  const result = await UserService.VerifyEmail(userId, emailVerificationCode);
 
   if (result.error) {
     return res.status(400).send({
@@ -178,40 +178,39 @@ sendPasswordResetEmail = async (req, res) => {
 };
 
 sendVerificationEmail = async (req, res) => {
-  const token = req.query.token;
+  const { email } = req.query;
 
-  if (!token) {
+  if (!email) {
     return res.status(400).send({
       statusCode: 400,
-      message: "Token is required.",
+      message: "Email is required.",
     });
   }
 
-  const user = verifyToken(token);
-  const userRec = await UserService.getUser(user.id, "emailVerified");
+  const User = await UserService.getUser(
+    { email },
+    "email username emailVerified"
+  );
 
-  if (!userRec) {
+  if (!User) {
     return res.status(400).send({
       statusCode: 400,
       message: "Email verification failed.",
     });
   }
 
-  if (userRec.emailVerified) {
+  if (User.emailVerified) {
     return res.status(400).send({
       statusCode: 400,
       message: "Email already verified.",
     });
   }
 
-  await UserService.createEmailVerification(
-    {
-      _id: user.id,
-      email: user.email,
-      username: user.username,
-    },
-    token
-  );
+  await UserService.SendVerificationEmail({
+    _id: User._id,
+    email: User.email,
+    username: User.username,
+  });
 
   return res.status(200).send({
     statusCode: 200,

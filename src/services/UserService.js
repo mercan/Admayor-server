@@ -1,6 +1,6 @@
 const ObjectId = require("mongoose").Types.ObjectId;
 const { randomBytes } = require("crypto");
-const createToken = require("../utils/createToken.js");
+const createToken = require("../utils/createToken");
 const userModel = require("../models/user");
 const logger = require("../helpers/logger");
 
@@ -17,7 +17,7 @@ class UserService {
     try {
       const User = await this.userModel.create(user);
       const token = createToken(User);
-      await this.createEmailVerification(User, token);
+      await this.SendVerificationEmail(User);
 
       return {
         message: "Successfully signed up.",
@@ -131,27 +131,30 @@ class UserService {
     return { error: "Password reset email failed." };
   }
 
-  async createEmailVerification(user, token) {
+  async SendVerificationEmail(user) {
+    const randomCode = randomBytes(124).toString("hex");
+    const code = `${user._id}:${randomCode}`;
+
     await MailService.sendMail("registration", {
       email: user.email,
       username: user.username,
-      emailVerificationCode: token,
+      emailVerificationCode: code,
     });
 
     return await this.client.set(
       `emailVerificationCode:${user._id}`,
-      token,
+      code,
       "EX",
       60 * 60 * 24
     );
   }
 
-  getUser(userId, selectFileds) {
-    if (this.isValidId(userId)) {
-      return this.userModel.findById(userId, selectFileds);
+  async getUser(userIdOrField, selectFileds) {
+    if (this.isValidId(userIdOrField)) {
+      return this.userModel.findById(userIdOrField, selectFileds);
+    } else {
+      return this.userModel.findOne(userIdOrField, selectFileds);
     }
-
-    return null;
   }
 
   getRedisToken(folderName, userId) {

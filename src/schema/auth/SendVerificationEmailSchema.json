@@ -2,11 +2,12 @@
   "tags": ["auth"],
   "query": {
     "type": "object",
-    "required": ["token"],
+    "required": ["email"],
     "properties": {
-      "token": {
+      "email": {
         "type": "string",
-        "description": "The token to use for authentication. (JWT Token)"
+        "format": "email",
+        "description": "The email address of the user"
       }
     }
   },

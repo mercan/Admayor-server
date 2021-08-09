@@ -2,9 +2,9 @@
   "tags": ["auth"],
   "querystring": {
     "type": "object",
-    "required": ["token"],
+    "required": ["code"],
     "properties": {
-      "token": {
+      "code": {
         "type": "string",
         "description": "Email confirmation code."
       }

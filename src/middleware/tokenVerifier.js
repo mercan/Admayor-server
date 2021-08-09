@@ -21,7 +21,7 @@ module.exports = (req, res, next) => {
   } catch {
     return res.code(401).send({
       statusCode: 401,
-      message: "Invalid token!",
+      message: "Unauthorized!",
     });
   }
 
