@@ -108,10 +108,10 @@ class UserService {
   }
 
   async SendPasswordResetEmail(email) {
-    const User = await this.userModel.findOne({ email });
+    const User = await this.userModel.findOne({ email }, "_id");
 
     if (User) {
-      const token = `${userId}:${randomBytes(32).toString("hex")}`;
+      const token = `${User._id}:${randomBytes(32).toString("hex")}`;
 
       await MailService.sendMail("resetPassword", {
         email,
@@ -119,7 +119,7 @@ class UserService {
       });
 
       await this.client.set(
-        `passwordResetCode:${userId}`,
+        `passwordResetCode:${User._id}`,
         token,
         "EX",
         60 * 60 * 24
