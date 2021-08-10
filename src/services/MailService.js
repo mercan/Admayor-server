@@ -24,11 +24,11 @@ class MailService {
       case "d-b50470133f244d539c2f2bf7e59394ad":
         return {
           username: user.username,
-          emailVerificationLink: `https://admayor.herokuapp.com/auth/emailVerify?token=${user.emailVerificationCode}`,
+          emailVerificationLink: `https://admayor.herokuapp.com/auth/emailVerify?code=${user.emailVerificationCode}`,
         };
       case "d-273b0386e79d4e6ab8d574860c381c57":
         return {
-          passwordResetLink: `https://admayor.herokuapp.com/auth/passwordReset?token=${user.passwordResetCode}`,
+          passwordResetLink: `https://admayor.herokuapp.com/auth/passwordReset?code=${user.passwordResetCode}`,
         };
       default:
         return "ERROR";

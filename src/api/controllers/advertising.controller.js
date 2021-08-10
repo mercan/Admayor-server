@@ -20,7 +20,7 @@ const createVideoAd = (advertising) => {
   const youtube = new URL(advertising.url);
 
   if (
-    !["30", "45", "60", "120"].includes(advertising.duration) ||
+    !["30", "45", "60", "120", "240"].includes(advertising.duration) ||
     (youtube.hostname !== "youtu.be" && youtube.hostname !== "youtube.com")
   ) {
     return {

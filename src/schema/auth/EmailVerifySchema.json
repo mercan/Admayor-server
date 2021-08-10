@@ -1,6 +1,6 @@
 {
   "tags": ["auth"],
-  "querystring": {
+  "query": {
     "type": "object",
     "required": ["code"],
     "properties": {
