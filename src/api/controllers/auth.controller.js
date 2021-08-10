@@ -1,5 +1,4 @@
 const UserService = require("../../services/UserService");
-const verifyToken = require("../../utils/verifyToken");
 const unavailableUsernames = require("../../utils/unavailableUsername.json");
 const unavailableEmails = require("../../utils/unavailableEmail.json");
 
@@ -7,7 +6,8 @@ const unavailableEmails = require("../../utils/unavailableEmail.json");
 const {
   RegisterSchema,
   LoginSchema,
-  PasswordResetSchema,
+  ResetPasswordSchema,
+  ChangePasswordSchema,
   PasswordResetValidateSchema,
 } = require("../../validation/user.schema");
 
@@ -113,7 +113,7 @@ emailVerify = async (req, res) => {
 
 resetPassword = async (req, res) => {
   const { error, value } = PasswordResetValidateSchema.validate({
-    token: req.query.token,
+    code: req.query.code,
     password: req.body.password,
   });
 
@@ -124,19 +124,19 @@ resetPassword = async (req, res) => {
     });
   }
 
-  const [userId] = value.token.split(":");
+  const [userId] = value.code.split(":");
 
-  if (!userId || !value.token) {
+  if (!userId || !value.code) {
     return res.status(400).send({
       statusCode: 400,
-      message: "Token is invalid.",
+      message: "Code is invalid.",
     });
   }
 
   const result = await UserService.ResetPassword({
     userId,
     password: value.password,
-    token: value.token,
+    code: value.code,
   });
 
   if (result.error) {
@@ -152,8 +152,8 @@ resetPassword = async (req, res) => {
   });
 };
 
-sendPasswordResetEmail = async (req, res) => {
-  const { error, value } = PasswordResetSchema.validate(req.query);
+changePassword = async (req, res) => {
+  const { error, value: User } = ChangePasswordSchema.validate(req.body);
 
   if (error) {
     return res.status(400).send({
@@ -162,7 +162,36 @@ sendPasswordResetEmail = async (req, res) => {
     });
   }
 
-  const result = await UserService.SendPasswordResetEmail(value.email);
+  const result = await UserService.ChangePassword(
+    req.user.id,
+    User.password,
+    User.newPassword
+  );
+
+  if (result.error) {
+    return res.status(400).send({
+      statusCode: 400,
+      message: result.error,
+    });
+  }
+
+  return res.status(200).send({
+    statusCode: 200,
+    message: result.message,
+  });
+};
+
+sendResetPasswordEmail = async (req, res) => {
+  const { error, value } = ResetPasswordSchema.validate(req.query);
+
+  if (error) {
+    return res.status(400).send({
+      statusCode: 400,
+      message: error.details[0].message,
+    });
+  }
+
+  const result = await UserService.SendResetPasswordEmail(value.email);
 
   if (result.error) {
     return res.status(400).send({
@@ -225,5 +254,6 @@ module.exports = {
   emailVerify,
   sendVerificationEmail,
   resetPassword,
-  sendPasswordResetEmail,
+  sendResetPasswordEmail,
+  changePassword,
 };

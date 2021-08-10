@@ -30,13 +30,13 @@ class UserService {
   }
 
   async Login({ email, password }) {
-    const userRecord = await this.userModel.findOne({ email });
+    const User = await this.userModel.findOne({ email });
 
-    if (!userRecord) {
+    if (!User) {
       return { error: "Login failed; Invalid email or password." };
     }
 
-    const isMatch = userRecord.comparePassword(password);
+    const isMatch = User.comparePassword(password);
 
     if (!isMatch) {
       return { error: "Login failed; Invalid email or password." };
@@ -44,7 +44,7 @@ class UserService {
 
     return {
       message: "Successfully signed in.",
-      token: createToken(userRecord),
+      token: createToken(User),
     };
   }
 
@@ -58,7 +58,7 @@ class UserService {
       "emailVerified"
     );
 
-    const correctCode = await this.getRedisToken(
+    const correctCode = await this.getRedisCode(
       "emailVerificationCode",
       userId
     );
@@ -81,15 +81,15 @@ class UserService {
     return { message: "Email verified successfully." };
   }
 
-  async ResetPassword({ userId, password, token }) {
+  async ResetPassword({ userId, password, code }) {
     if (!this.isValidId(userId)) {
       return { error: "Your password could not be changed" };
     }
 
     const User = await this.userModel.findById(userId, "password");
-    const correctToken = await this.getRedisToken("passwordResetCode", userId);
+    const correctCode = await this.getRedisCode("passwordResetCode", userId);
 
-    if (!User || !correctToken || token !== correctToken) {
+    if (!User || !correctCode || code !== correctCode) {
       return { error: "Your password could not be changed." };
     }
 
@@ -107,20 +107,42 @@ class UserService {
     return { message: "Your password has been changed." };
   }
 
-  async SendPasswordResetEmail(email) {
+  async ChangePassword(userId, password, newPassword) {
+    if (!this.isValidId(userId)) {
+      return { error: "Your password could not be changed." };
+    }
+
+    const User = await this.userModel.findById(userId, "password");
+    const isMatch = User.comparePassword(password);
+
+    if (!isMatch) {
+      return { error: "Your password could not be changed." };
+    }
+
+    if (User.comparePassword(newPassword)) {
+      return {
+        error: "The new password cannot be the same as the old password.",
+      };
+    }
+
+    await User.resetPassword(newPassword);
+    return { message: "Your password has been changed." };
+  }
+
+  async SendResetPasswordEmail(email) {
     const User = await this.userModel.findOne({ email }, "_id");
 
     if (User) {
-      const token = `${User._id}:${randomBytes(32).toString("hex")}`;
+      const code = `${User._id}:${randomBytes(32).toString("hex")}`;
 
       await MailService.sendMail("resetPassword", {
         email,
-        passwordResetCode: token,
+        passwordResetCode: code,
       });
 
       await this.client.set(
         `passwordResetCode:${User._id}`,
-        token,
+        code,
         "EX",
         60 * 60 * 24
       );
@@ -157,7 +179,7 @@ class UserService {
     }
   }
 
-  getRedisToken(folderName, userId) {
+  getRedisCode(folderName, userId) {
     return new Promise((resolve, reject) => {
       this.client.get(`${folderName}:${userId}`, (err, result) => {
         if (err) {

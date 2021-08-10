@@ -1,5 +1,6 @@
 const config = require("../../config/index");
 const authController = require("../controllers/auth.controller");
+const tokenVerifier = require("../../middleware/tokenVerifier");
 
 // Schema
 const registerSchema = require("../../schema/auth/RegisterSchema.json");
@@ -8,6 +9,7 @@ const sendVerificationEmailSchema = require("../../schema/auth/SendVerificationE
 const emailVerifySchema = require("../../schema/auth/EmailVerifySchema.json");
 const resetPasswordSchema = require("../../schema/auth/ResetPasswordSchema.json");
 const sendResetPasswordEmailSchema = require("../../schema/auth/SendResetPasswordEmailSchema.json");
+const changePasswordSchema = require("../../schema/auth/ChangePasswordSchema.json");
 
 const routes = [
   {
@@ -74,7 +76,26 @@ const routes = [
     method: "GET",
     url: `/${config.apiVersion}/${config.authRoutePath}/resetPassword`,
     schema: sendResetPasswordEmailSchema,
-    handler: authController.sendPasswordResetEmail,
+    config: {
+      rateLimit: {
+        max: config.rateLimit.auth.sendResetPasswordEmail.max,
+        timeWindow: config.rateLimit.auth.sendResetPasswordEmail.timeWindow,
+      },
+    },
+    handler: authController.sendResetPasswordEmail,
+  },
+  {
+    method: "POST",
+    url: `/${config.apiVersion}/${config.authRoutePath}/changePassword`,
+    schema: changePasswordSchema,
+    config: {
+      rateLimit: {
+        max: config.rateLimit.auth.changePassword.max,
+        timeWindow: config.rateLimit.auth.changePassword.timeWindow,
+      },
+    },
+    preValidation: tokenVerifier,
+    handler: authController.changePassword,
   },
 ];
 

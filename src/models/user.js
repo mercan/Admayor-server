@@ -61,8 +61,13 @@ User.statics.passwordUpdate = async function (userId, plainPassword) {
 
 // Istance methods
 User.methods.resetPassword = function (plainPassword) {
-  this.password = bcrypt.hashSync(plainPassword, 10);
-  this.save();
+  const password = bcrypt.hashSync(plainPassword, 10);
+
+  return this.update({
+    $set: {
+      password,
+    },
+  });
 };
 
 User.methods.comparePassword = function (plainPassword) {

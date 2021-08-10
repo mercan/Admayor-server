@@ -35,13 +35,6 @@ module.exports = {
         timeWindow: Number(process.env.RATE_LIMIT_AUTH_SIGNIN_TIME_WINDOW),
       },
 
-      sendVerificationEmail: {
-        max: Number(process.env.RATE_LIMIT_AUTH_VERIFICATION_EMAIL_MAX),
-        timeWindow: Number(
-          process.env.RATE_LIMIT_AUTH_VERIFICATION_EMAIL_TIME_WINDOW
-        ),
-      },
-
       emailVerify: {
         max: Number(process.env.RATE_LIMIT_AUTH_EMAIL_VERIFY_MAX),
         timeWindow: Number(
@@ -49,10 +42,31 @@ module.exports = {
         ),
       },
 
+      sendVerificationEmail: {
+        max: Number(process.env.RATE_LIMIT_AUTH_VERIFICATION_EMAIL_MAX),
+        timeWindow: Number(
+          process.env.RATE_LIMIT_AUTH_VERIFICATION_EMAIL_TIME_WINDOW
+        ),
+      },
+
       resetPassword: {
         max: Number(process.env.RATE_LIMIT_AUTH_RESET_PASSWORD_MAX),
         timeWindow: Number(
           process.env.RATE_LIMIT_AUTH_RESET_PASSWORD_TIME_WINDOW
+        ),
+      },
+
+      sendResetPasswordEmail: {
+        max: Number(process.env.RATE_LIMIT_AUTH_RESET_PASSWORD_EMAIL_MAX),
+        timeWindow: Number(
+          process.env.RATE_LIMIT_AUTH_RESET_PASSWORD_EMAIL_TIME_WINDOW
+        ),
+      },
+
+      changePassword: {
+        max: Number(process.env.RATE_LIMIT_AUTH_CHANGE_PASSWORD_MAX),
+        timeWindow: Number(
+          process.env.RATE_LIMIT_AUTH_CHANGE_PASSWORD_TIME_WINDOW
         ),
       },
     },
