@@ -34,7 +34,7 @@ const Advertising = new Schema(
           type: String,
           required: true,
           lowwercase: true,
-          enum: ["surf", "autosurf", "window", "video", "job", "poll"],
+          enum: ["surf", "autosurf", "window", "video"],
         },
 
         duration: {
@@ -63,11 +63,6 @@ const Advertising = new Schema(
           required: true,
         },
 
-        frequency: {
-          type: Number,
-          required: true,
-        },
-
         geoTargets: {
           type: [{ type: String, enum: countries, required: true }],
         },
@@ -79,6 +74,8 @@ const Advertising = new Schema(
         userQualityTarget: {
           type: Number,
           required: true,
+          default: 0,
+          min: 0,
         },
 
         isAdult: {

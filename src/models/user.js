@@ -38,6 +38,10 @@ const User = new Schema(
       type: Boolean,
       default: false,
     },
+
+    lastLogin: {
+      type: Date,
+    },
   },
   {
     timestamps: true,
@@ -72,6 +76,14 @@ User.methods.resetPassword = function (plainPassword) {
 
 User.methods.comparePassword = function (plainPassword) {
   return bcrypt.compareSync(plainPassword, this.password);
+};
+
+User.methods.updateLastLogin = function () {
+  return this.update({
+    $set: {
+      lastLogin: Date.now(),
+    },
+  });
 };
 
 User.pre("save", function (next) {

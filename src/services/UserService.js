@@ -18,6 +18,7 @@ class UserService {
       const User = await this.userModel.create(user);
       const token = createToken(User);
       await this.SendVerificationEmail(User);
+      await User.updateLastLogin();
 
       return {
         message: "Successfully signed up.",
@@ -41,6 +42,8 @@ class UserService {
     if (!isMatch) {
       return { error: "Login failed; Invalid email or password." };
     }
+
+    await User.updateLastLogin();
 
     return {
       message: "Successfully signed in.",

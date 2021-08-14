@@ -90,6 +90,11 @@ const createAdvertising = async (req, res) => {
     return res.status(result.statusCode).send(result);
   }
 
+  return res.status(400).send({
+    statusCode: 400,
+    message: "Invalid ad type",
+  });
+
   value.configurations = {
     type: value.type,
     duration: value.duration,
