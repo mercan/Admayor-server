@@ -12,8 +12,8 @@
   },
   "response": {
     "200": {
-      "description": "Email verified successfully.",
       "type": "object",
+      "description": "Successful response",
       "properties": {
         "statusCode": {
           "type": "number",
@@ -21,7 +21,9 @@
           "default": 200
         },
         "message": {
-          "type": "string"
+          "type": "string",
+          "description": "Success message.",
+          "default": "Email verified successfully."
         }
       }
     },

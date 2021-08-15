@@ -1,16 +1,6 @@
 {
-  "tags": ["auth"],
-  "query": {
-    "type": "object",
-    "required": ["email"],
-    "properties": {
-      "email": {
-        "type": "string",
-        "format": "email",
-        "description": "The email address of the user"
-      }
-    }
-  },
+  "tags": ["wallet"],
+  "security": [{ "BearerAuth": [] }],
   "response": {
     "200": {
       "type": "object",
@@ -24,7 +14,12 @@
         "message": {
           "type": "string",
           "description": "Success message",
-          "default": "Verification email sent."
+          "default": "Wallet created successfully."
+        },
+        "address": {
+          "type": "string",
+          "description": "The bitcoin address.",
+          "default": "32cJqQaePdKrBZ6E9x355sBnZQ7QqvitEb"
         }
       }
     },

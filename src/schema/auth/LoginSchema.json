@@ -19,8 +19,8 @@
   },
   "response": {
     "200": {
-      "description": "Successfully signed in.",
       "type": "object",
+      "description": "Successful response",
       "properties": {
         "statusCode": {
           "type": "number",
@@ -28,7 +28,9 @@
           "default": 200
         },
         "message": {
-          "type": "string"
+          "type": "string",
+          "description": "Success message",
+          "default": "Successfully signed in."
         },
         "token": {
           "type": "string"

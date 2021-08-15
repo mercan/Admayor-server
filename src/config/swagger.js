@@ -22,32 +22,36 @@ module.exports = {
     schemes: ["http", "https"],
     consumes: ["application/json"],
     produces: ["application/json"],
-    tags: [{ name: "auth", description: "Authentication related end-points" }],
+    tags: [
+      { name: "auth", description: "Authentication related end-points" },
+      { name: "wallet", description: "Wallet related end-points" },
+    ],
     components: {
       schemas: {
         User: {
           type: "object",
-          required: [
-            "id",
-            "email",
-            "username",
-            "password",
-            "userType",
-            "emailVerified",
-            "createdAt",
-            "updatedAt",
-          ],
           properties: {
-            _id: { type: "string" },
+            id: { type: "string" },
             email: { type: "string", format: "email" },
             username: { type: "string" },
             password: { type: "string", format: "password" },
-            userType: {
+            role: {
               type: "string",
               enum: ["admin", "user"],
               default: "user",
             },
             emailVerified: { type: "boolean", default: false },
+            bitcoinAddress: { type: "string" },
+            wallet: {
+              type: "object",
+              required: ["address", "privateKey", "createdAt"],
+              properties: {
+                address: { type: "string" },
+                privateKey: { type: "string" },
+                createdAt: { type: "string", format: "date-time" },
+              },
+            },
+            lastLogin: { type: "string", format: "date-time" },
             createdAt: { type: "string", format: "date-time" },
             updatedAt: { type: "string", format: "date-time" },
           },

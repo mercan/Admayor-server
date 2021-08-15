@@ -12,6 +12,8 @@ module.exports = {
   jwtSecretKey: process.env.JWT_SECRET,
   jwtAlgorithm: process.env.JWT_ALGO,
   jwtExpiresIn: process.env.JWT_EXPIRES_IN,
+  walletSecretKey: process.env.WALLET_SECRET,
+  BTCAdress: process.env.BTC_ADDRESS,
   redis: {
     hostname: process.env.REDIS_HOSTNAME,
     password: process.env.REDIS_PASSWORD,

@@ -39,6 +39,25 @@ const User = new Schema(
       default: false,
     },
 
+    bitcoinAddress: {
+      type: String,
+      default: "",
+    },
+
+    wallet: {
+      address: {
+        type: String,
+        unique: true,
+      },
+      privateKey: {
+        type: String,
+      },
+      createdAt: {
+        type: Date,
+        default: Date.now(),
+      },
+    },
+
     lastLogin: {
       type: Date,
     },

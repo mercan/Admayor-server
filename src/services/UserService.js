@@ -6,6 +6,7 @@ const logger = require("../helpers/logger");
 
 const RedisService = require("./RedisService");
 const MailService = require("./MailService");
+const WalletService = require("./WalletService");
 
 class UserService {
   constructor({ RedisService, userModel }) {
@@ -196,6 +197,38 @@ class UserService {
 
   isValidId(userId) {
     return ObjectId.isValid(userId);
+  }
+
+  // Wallet Service
+  async createWallet(userId) {
+    const User = await this.userModel.findById(userId, "wallet");
+
+    if (!User) {
+      return { error: "User not found." };
+    }
+
+    if (User.wallet?.address) {
+      return { error: "Address already exists." };
+    }
+
+    const wallet = WalletService.createWallet(userId);
+    const walletCheck = await this.userModel.findOne(
+      {
+        "wallet.address": wallet.address,
+      },
+      "_id"
+    );
+
+    if (walletCheck) {
+      return createWallet(userId);
+    }
+
+    await this.userModel.updateOne({ _id: userId }, { $set: { wallet } });
+
+    return {
+      message: "Wallet created successfully.",
+      address: wallet.address,
+    };
   }
 }
 
