@@ -21,7 +21,7 @@ function build(opts = {}) {
 
   const routes = require("./api/routes/index");
   routes.forEach((route) => app.route(route));
-  require("./services/WalletService");
+
   return app;
 }
 
