@@ -57,7 +57,6 @@ const User = new Schema(
     wallet: {
       address: {
         type: String,
-        unique: true,
       },
 
       privateKey: {
@@ -69,6 +68,59 @@ const User = new Schema(
       },
     },
 
+    loginInfo: [
+      {
+        _id: false,
+        ip: {
+          type: String,
+          required: true,
+        },
+
+        city: {
+          type: String,
+        },
+
+        country: {
+          type: String,
+        },
+
+        userAgent: {
+          browser: {
+            name: {
+              type: String,
+            },
+            version: {
+              type: String,
+            },
+          },
+          os: {
+            name: {
+              type: String,
+            },
+            version: {
+              type: String,
+            },
+          },
+          device: {
+            vendor: {
+              type: String,
+            },
+            model: {
+              type: String,
+            },
+            type: {
+              type: String,
+            },
+          },
+        },
+
+        createdAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
+
     lastLogin: {
       type: Date,
     },
@@ -79,7 +131,6 @@ const User = new Schema(
         id: {
           type: Schema.Types.ObjectId,
           ref: "Advertising",
-          unique: true,
         },
       },
     ],
@@ -136,7 +187,7 @@ User.pre("save", function (next) {
   next();
 });
 
-User.index({ email: 1, username: 1 });
+User.index({ email: 1, "wallet.address": 1 });
 
 const userModel = mongoose.model("User", User);
 module.exports = userModel;

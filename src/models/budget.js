@@ -16,11 +16,6 @@ const Budget = new Schema(
       enum: ["surf", "autosurf", "window", "video"],
     },
 
-    adDuration: {
-      type: Number,
-      required: true,
-    },
-
     budgets: [
       {
         userId: {

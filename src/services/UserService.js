@@ -1,8 +1,9 @@
 const ObjectId = require("mongoose").Types.ObjectId;
+const userAgentParser = require("ua-parser-js");
 const { randomBytes } = require("crypto");
 const createToken = require("../utils/createToken");
 const userModel = require("../models/user");
-const logger = require("../helpers/logger");
+const got = require("got");
 
 const RedisService = require("./RedisService");
 const MailService = require("./MailService");
@@ -14,41 +15,42 @@ class UserService {
     this.userModel = userModel;
   }
 
-  async Register(user) {
+  async Register(user, userAgent, ipAddress) {
     try {
-      const User = await this.userModel.create(user);
-      const token = createToken(User);
-      await this.SendVerificationEmail(User);
-      await User.updateLastLogin();
+      const UserRecord = await this.userModel.create(user);
+      const token = createToken(UserRecord);
+      await this.SendVerificationEmail(UserRecord);
+      await UserRecord.updateLastLogin();
+      await this.createLoginInfo(UserRecord._id, userAgent, ipAddress);
 
       return {
         message: "Successfully signed up.",
         token,
       };
-    } catch (err) {
-      logger.error(`User signed up failed: ${err}`, { serivce: "User" });
+    } catch {
       return { error: "User already exists." };
     }
   }
 
-  async Login({ email, password }) {
-    const User = await this.userModel.findOne({ email });
+  async Login(user, userAgent, ipAddress) {
+    const UserRecord = await this.userModel.findOne({ email: user.email });
 
-    if (!User) {
+    if (!UserRecord) {
       return { error: "Login failed; Invalid email or password." };
     }
 
-    const isMatch = User.comparePassword(password);
+    const isMatch = UserRecord.comparePassword(user.password);
 
     if (!isMatch) {
       return { error: "Login failed; Invalid email or password." };
     }
 
-    await User.updateLastLogin();
+    await UserRecord.updateLastLogin();
+    await this.createLoginInfo(UserRecord._id, userAgent, ipAddress);
 
     return {
       message: "Successfully signed in.",
-      token: createToken(User),
+      token: createToken(UserRecord),
     };
   }
 
@@ -181,6 +183,30 @@ class UserService {
     } else {
       return this.userModel.findOne(userIdOrField, selectFileds);
     }
+  }
+
+  async createLoginInfo(userId, userAgent, ipAddress) {
+    const ua = userAgentParser(userAgent);
+    const url = `http://ip-api.com/json/${ipAddress}?fields=status,country,city`;
+    const { body } = await got.get(url, {
+      headers: { "Content-Type": "application/json" },
+      responseType: "json",
+    });
+    const loginInfo = { ip: ipAddress, userAgent: ua };
+
+    if (body.status === "success") {
+      loginInfo.city = body.city;
+      loginInfo.country = body.country;
+    }
+
+    await this.userModel.updateOne(
+      { _id: userId },
+      {
+        $push: {
+          loginInfo,
+        },
+      }
+    );
   }
 
   getRedisCode(folderName, userId) {

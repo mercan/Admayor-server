@@ -35,7 +35,9 @@ const register = async (req, res) => {
     });
   }
 
-  const result = await UserService.Register(User);
+  const userAgent = req.headers["user-agent"];
+  const ipAddress = req.ip || req.ips[0];
+  const result = await UserService.Register(User, userAgent, ipAddress);
 
   if (result.error) {
     return res.status(409).send({
@@ -61,7 +63,9 @@ const login = async (req, res) => {
     });
   }
 
-  const result = await UserService.Login(User);
+  const userAgent = req.headers["user-agent"];
+  const ipAddress = req.ip || req.ips[0];
+  const result = await UserService.Login(User, userAgent, ipAddress);
 
   if (result.error) {
     return res.status(400).send({
@@ -77,7 +81,7 @@ const login = async (req, res) => {
   });
 };
 
-emailVerify = async (req, res) => {
+const emailVerify = async (req, res) => {
   const emailVerificationCode = req.query.code;
 
   if (!emailVerificationCode) {
@@ -111,7 +115,7 @@ emailVerify = async (req, res) => {
   });
 };
 
-resetPassword = async (req, res) => {
+const resetPassword = async (req, res) => {
   const { error, value } = PasswordResetValidateSchema.validate({
     code: req.query.code,
     password: req.body.password,
@@ -152,7 +156,7 @@ resetPassword = async (req, res) => {
   });
 };
 
-changePassword = async (req, res) => {
+const changePassword = async (req, res) => {
   const { error, value: User } = ChangePasswordSchema.validate(req.body);
 
   if (error) {
@@ -181,7 +185,7 @@ changePassword = async (req, res) => {
   });
 };
 
-sendResetPasswordEmail = async (req, res) => {
+const sendResetPasswordEmail = async (req, res) => {
   const { error, value } = ResetPasswordSchema.validate(req.query);
 
   if (error) {
@@ -206,7 +210,7 @@ sendResetPasswordEmail = async (req, res) => {
   });
 };
 
-sendVerificationEmail = async (req, res) => {
+const sendVerificationEmail = async (req, res) => {
   const { email } = req.query;
 
   if (!email) {
