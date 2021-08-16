@@ -16,6 +16,11 @@ class WalletService {
     this.algorithm = "aes-256-ctr";
   }
 
+  /**
+   * @param {string} address - Bitcoin address.
+   * @returns {object} - Returns a confirmed balance and an unconfirmed balance.
+   * @returns {null} - If the address is not found.
+   */
   async getBalance(address) {
     const url = `get_address_balance/BTCTEST/${address}`;
     const { body } = await this.request.get(url);
@@ -30,6 +35,11 @@ class WalletService {
     return null;
   }
 
+  /**
+   * @param {string} address - Bitcoin address.
+   * @returns {object} - Returns transaction id.
+   * @returns {null} - If no unspent transaction or address is not found.
+   */
   async getTxUnspent(address) {
     const url = `get_tx_unspent/BTCTEST/${address}`;
     const { body } = await this.request.get(url);
@@ -101,22 +111,6 @@ class WalletService {
     };
   }
 
-  createWallet() {
-    const keyPair = bitcoin.ECPair.makeRandom({ network: this.network });
-    const { address } = bitcoin.payments.p2sh({
-      redeem: bitcoin.payments.p2wpkh({
-        pubkey: keyPair.publicKey,
-        network: this.network,
-      }),
-      network: this.network,
-    });
-
-    return {
-      address,
-      privateKey: this.encrypt(keyPair.toWIF()),
-    };
-  }
-
   async sendBTC() {
     // Kullanıcı için oluşturduğumuz bitcoin adresi
     const unspentData = await this.getTxUnspent(
@@ -166,10 +160,33 @@ class WalletService {
 
     const txHex = psbt.extractTransaction().toHex();
     const sendTxData = await this.sendTx(txHex);
-
     return sendTxData;
   }
 
+  /**
+   * @returns {object} - Returns an bitcoin address and encrypted private key
+   */
+  createWallet() {
+    const keyPair = bitcoin.ECPair.makeRandom({ network: this.network });
+    const { address } = bitcoin.payments.p2sh({
+      redeem: bitcoin.payments.p2wpkh({
+        pubkey: keyPair.publicKey,
+        network: this.network,
+      }),
+      network: this.network,
+    });
+
+    return {
+      address,
+      privateKey: this.encrypt(keyPair.toWIF()),
+      createdAt: new Date(),
+    };
+  }
+
+  /**
+   * @param {string} privateKey - Bitcoin private key.
+   * @returns {string} - Returns an encrypted private key.
+   */
   encrypt(privateKey) {
     const iv = crypto.randomBytes(16);
     const cipher = crypto.createCipheriv(
@@ -186,8 +203,12 @@ class WalletService {
     return `${iv.toString("hex")}:${encrypted.toString("hex")}`;
   }
 
-  decrypt(hash) {
-    const [iv, privateKey] = hash.split(":");
+  /**
+   * @param {encryptedPrivateKey} encryptedPrivateKey - Encrypted private key.
+   * @returns {string} - Returns a decrypted private key.
+   */
+  decrypt(encryptedPrivateKey) {
+    const [iv, privateKey] = encryptedPrivateKey.split(":");
     const decipher = crypto.createDecipheriv(
       this.algorithm,
       config.walletSecretKey,
@@ -202,6 +223,10 @@ class WalletService {
     return decrpyted.toString();
   }
 
+  /**
+   * @param {string} address - Bitcoin address.
+   * @returns {boolean} - Returns true if the address is valid, false if it is invalid.
+   */
   isValidAddress(address) {
     try {
       bitcoin.address.toOutputScript(address, this.network);

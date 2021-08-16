@@ -39,6 +39,16 @@ const User = new Schema(
       default: false,
     },
 
+    balance: {
+      type: Number,
+      default: 0,
+    },
+
+    advertisingBalance: {
+      type: Number,
+      default: 0,
+    },
+
     bitcoinAddress: {
       type: String,
       default: "",
@@ -49,18 +59,30 @@ const User = new Schema(
         type: String,
         unique: true,
       },
+
       privateKey: {
         type: String,
       },
+
       createdAt: {
         type: Date,
-        default: Date.now(),
       },
     },
 
     lastLogin: {
       type: Date,
     },
+
+    displayedAdIds: [
+      {
+        _id: false,
+        id: {
+          type: Schema.Types.ObjectId,
+          ref: "Advertising",
+          unique: true,
+        },
+      },
+    ],
   },
   {
     timestamps: true,
@@ -86,7 +108,7 @@ User.statics.passwordUpdate = async function (userId, plainPassword) {
 User.methods.resetPassword = function (plainPassword) {
   const password = bcrypt.hashSync(plainPassword, 10);
 
-  return this.update({
+  return this.updateOne({
     $set: {
       password,
     },
@@ -98,7 +120,7 @@ User.methods.comparePassword = function (plainPassword) {
 };
 
 User.methods.updateLastLogin = function () {
-  return this.update({
+  return this.updateOne({
     $set: {
       lastLogin: Date.now(),
     },
@@ -116,5 +138,5 @@ User.pre("save", function (next) {
 
 User.index({ email: 1, username: 1 });
 
-const userModel = mongoose.model("user", User);
+const userModel = mongoose.model("User", User);
 module.exports = userModel;

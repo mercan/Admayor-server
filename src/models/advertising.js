@@ -105,5 +105,5 @@ const Advertising = new Schema(
 
 // Istance methods
 
-const advertisingModel = mongoose.model("advertising", Advertising);
+const advertisingModel = mongoose.model("Advertising", Advertising);
 module.exports = advertisingModel;

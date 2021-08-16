@@ -25,6 +25,7 @@ module.exports = {
     tags: [
       { name: "auth", description: "Authentication related end-points" },
       { name: "wallet", description: "Wallet related end-points" },
+      { name: "report", description: "Report related end-points" },
     ],
     components: {
       schemas: {
