@@ -11,7 +11,7 @@ module.exports = () => {
   });
 
   mongoose.connection.on("open", () =>
-    logger.info("Connection successful", { service: "MongoDB" })
+    logger.info("Connection to MongoDB", { service: "MongoDB" })
   );
   mongoose.connection.on("error", (error) =>
     logger.error(`Connection failed: ${error}`, { service: "MongoDB" })

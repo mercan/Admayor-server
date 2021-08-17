@@ -1,4 +1,4 @@
-const config = require("./config/index");
+const { port } = require("./config/index");
 const logger = require("./helpers/logger");
 
 const server = require("./app")({
@@ -6,12 +6,11 @@ const server = require("./app")({
   trustProxy: true,
 });
 
-server.listen(config.port, "0.0.0.0", (err, address) => {
+// Start the server
+server.listen(port, "0.0.0.0", (err) => {
+  // If there was an error, log it
   if (err) {
-    server.log.error(err);
+    logger.error(`Error starting server: ${err}`, { service: "Fastify" });
     process.exit(1);
   }
-
-  console.log(`Server listening on ${address}`);
-  server.log.info(`Server listening on ${address}`);
 });

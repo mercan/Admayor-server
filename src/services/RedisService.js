@@ -1,5 +1,5 @@
-const config = require("../config/index");
 const redis = require("redis");
+const { redis: redisConfig } = require("../config/index");
 const logger = require("../helpers/logger");
 
 class RedisService {
@@ -7,9 +7,10 @@ class RedisService {
     this.options = options;
     this.client = redis.createClient(this.options);
 
-    this.client.on("connect", () =>
-      logger.info("Connected to redis", { service: "Redis" })
-    );
+    this.client.on("connect", () => {
+      logger.info("Connected to Redis", { service: "Redis" });
+    });
+
     this.client.on("error", (error) => {
       logger.error(`Redis error: ${error}`, { service: "Redis" });
     });
@@ -21,9 +22,9 @@ class RedisService {
 }
 
 const options = {
-  password: config.redis.password,
-  host: config.redis.hostname,
-  port: config.redis.port,
+  password: redisConfig.password,
+  host: redisConfig.hostname,
+  port: redisConfig.port,
   no_ready_check: true,
 };
 

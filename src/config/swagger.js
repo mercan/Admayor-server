@@ -5,7 +5,7 @@ module.exports = {
   openapi: {
     info: {
       title: "AdMayor API",
-      version: "0.0.1",
+      version: "1.0.0",
       contact: {
         name: "İbrahim Can Mercan",
         email: "imrcn77@gmail.com",
@@ -67,6 +67,7 @@ module.exports = {
       },
     },
   },
+
   staticCSP: true,
   exposeRoute: true,
 };
