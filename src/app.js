@@ -28,8 +28,8 @@ function build(opts = {}) {
   app.register(rateLimitPlugin, rateLimiterConfig);
   app.register(fastifyExpressPlugin).then(() => {
     app.register(swStats.getFastifyPlugin, {
-      swaggerSpec: swaggerConfig,
-      basePath: "/",
+      uriPath: "/stats",
+      name: "AdMayor",
     });
   });
   app.register(swaggerPlugin, swaggerConfig);

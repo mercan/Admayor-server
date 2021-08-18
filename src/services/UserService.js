@@ -256,6 +256,27 @@ class UserService {
       address: wallet.address,
     };
   }
+
+  async saveBTCAddress(userId, address) {
+    if (!WalletService.isValidAddress(address)) {
+      return { error: "Invalid bitcoin address." };
+    }
+
+    const User = await this.userModel.findById(userId, "bitcoinAddress");
+
+    if (!User) {
+      return { error: "User not found." };
+    }
+
+    if (User.bitcoinAddress === address) {
+      return { message: "Bitcoin address saved." };
+    }
+
+    User.bitcoinAddress = address;
+    await User.save();
+
+    return { message: "Bitcoin address saved." };
+  }
 }
 
 const Dependencies = {

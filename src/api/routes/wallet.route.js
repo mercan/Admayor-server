@@ -3,6 +3,7 @@ const walletController = require("../controllers/wallet.controller");
 const tokenVerifier = require("../../middleware/tokenVerifier");
 
 const createWalletSchema = require("../../schema/wallet/CreateWalletSchema.json");
+const saveBTCAddressSchema = require("../../schema/wallet/SaveBTCAddressSchema.json");
 
 const routes = [
   {
@@ -11,6 +12,13 @@ const routes = [
     schema: createWalletSchema,
     preValidation: tokenVerifier,
     handler: walletController.createWallet,
+  },
+  {
+    method: "GET",
+    url: `/${config.apiVersion}/wallet/saveAddress`,
+    schema: saveBTCAddressSchema,
+    preValidation: tokenVerifier,
+    handler: walletController.saveBTCAddress,
   },
 ];
 

@@ -1,22 +1,13 @@
 {
-  "tags": ["auth"],
+  "tags": ["wallet"],
+  "security": [{ "BearerAuth": [] }],
   "query": {
     "type": "object",
-    "required": ["code"],
     "properties": {
-      "code": {
+      "address": {
         "type": "string",
-        "description": "Password reset confirmation code."
-      }
-    }
-  },
-  "body": {
-    "type": "object",
-    "properties": {
-      "password": {
-        "type": "string",
-        "minLength": 6,
-        "maxLength": 100
+        "description": "User `bitcoin` address",
+        "default": "1HEcFt5wTHhCEjJU3vp51qMNtF65N1xwth"
       }
     }
   },
@@ -33,7 +24,7 @@
         "message": {
           "type": "string",
           "description": "Success message",
-          "default": "Password reset successfully."
+          "default": "Bitcoin address saved."
         }
       }
     },
