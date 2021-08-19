@@ -19,9 +19,28 @@ class UserService {
     try {
       const UserRecord = await this.userModel.create(user);
       const token = createToken(UserRecord);
-      await this.SendVerificationEmail(UserRecord);
+
+      await UserRecord.generateReferenceCode();
       await UserRecord.updateLastLogin();
+      await this.SendVerificationEmail(UserRecord);
       await this.createLoginInfo(UserRecord._id, userAgent, ipAddress);
+
+      if (
+        user.referenceCode &&
+        String(user.referenceCode).length === 8 &&
+        Number.isInteger(Number(user.referenceCode))
+      ) {
+        await this.userModel.updateOne(
+          { referenceCode: user.referenceCode },
+          {
+            $push: {
+              references: {
+                userId: UserRecord._id,
+              },
+            },
+          }
+        );
+      }
 
       return {
         message: "Successfully signed up.",

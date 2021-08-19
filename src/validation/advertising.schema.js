@@ -62,16 +62,6 @@ const AdvertisingSchema = Joi.object()
       "date.base": "Started At must be a valid date",
     }),
 
-    endedAt: Joi.date().required().messages({
-      "date.required": "Ended At is required",
-      "date.base": "Ended At must be a valid date",
-    }),
-
-    frequency: Joi.number().integer().required().messages({
-      "number.required": "Frequency is required",
-      "number.integer": "Frequency must be an integer",
-    }),
-
     geoTargets: Joi.array().items(
       Joi.string()
         .required()

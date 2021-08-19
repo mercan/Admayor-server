@@ -21,6 +21,7 @@ class RedisService {
   }
 }
 
+// Redis Config
 const options = {
   password: redisConfig.password,
   host: redisConfig.hostname,
@@ -28,4 +29,5 @@ const options = {
   no_ready_check: true,
 };
 
+// Create Redis Service
 module.exports = new RedisService(options);

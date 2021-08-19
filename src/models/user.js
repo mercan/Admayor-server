@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const Schema = mongoose.Schema;
+const { randomInt } = require("crypto");
 
 const User = new Schema(
   {
@@ -58,15 +59,34 @@ const User = new Schema(
       address: {
         type: String,
       },
-
       privateKey: {
         type: String,
       },
-
       createdAt: {
         type: Date,
       },
     },
+
+    referenceCode: {
+      type: Number,
+      minLength: 8,
+      maxLength: 8,
+    },
+
+    references: [
+      {
+        _id: false,
+        userId: {
+          type: Schema.Types.ObjectId,
+          ref: "User",
+        },
+
+        createdAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
 
     loginInfo: [
       {
@@ -75,15 +95,12 @@ const User = new Schema(
           type: String,
           required: true,
         },
-
         city: {
           type: String,
         },
-
         country: {
           type: String,
         },
-
         userAgent: {
           browser: {
             name: {
@@ -113,7 +130,6 @@ const User = new Schema(
             },
           },
         },
-
         createdAt: {
           type: Date,
           default: Date.now,
@@ -121,19 +137,23 @@ const User = new Schema(
       },
     ],
 
-    lastLogin: {
-      type: Date,
-    },
-
     displayedAdIds: [
       {
         _id: false,
-        id: {
+        adId: {
           type: Schema.Types.ObjectId,
           ref: "Advertising",
         },
+        createdAt: {
+          type: Date,
+          default: Date.now,
+        },
       },
     ],
+
+    lastLoginAt: {
+      type: Date,
+    },
   },
   {
     timestamps: true,
@@ -173,9 +193,27 @@ User.methods.comparePassword = function (plainPassword) {
 User.methods.updateLastLogin = function () {
   return this.updateOne({
     $set: {
-      lastLogin: Date.now(),
+      lastLoginAt: Date.now(),
     },
   });
+};
+
+User.methods.generateReferenceCode = async function () {
+  while (true) {
+    const referenceCode = randomInt(10000000, 99999999);
+    const referenceCodeCheck = await userModel.findOne(
+      { referenceCode },
+      "_id"
+    );
+
+    if (!referenceCodeCheck) {
+      return this.updateOne({
+        $set: {
+          referenceCode,
+        },
+      });
+    }
+  }
 };
 
 User.pre("save", function (next) {
@@ -187,7 +225,7 @@ User.pre("save", function (next) {
   next();
 });
 
-User.index({ email: 1, "wallet.address": 1 });
+User.index({ email: 1, referenceCode: 1, "wallet.address": 1 });
 
 const userModel = mongoose.model("User", User);
 module.exports = userModel;

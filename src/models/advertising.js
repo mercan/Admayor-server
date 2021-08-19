@@ -58,11 +58,6 @@ const Advertising = new Schema(
           required: true,
         },
 
-        endedAt: {
-          type: Date,
-          required: true,
-        },
-
         geoTargets: {
           type: [{ type: String, enum: countries, required: true }],
         },
