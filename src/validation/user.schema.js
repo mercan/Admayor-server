@@ -41,7 +41,7 @@ const RegisterSchema = Joi.object()
       "any.required": "Please enter your password.",
     }),
 
-    referenceCode: Joi.string(),
+    registerReferenceCode: Joi.string(),
   })
   .required()
   .options(options)

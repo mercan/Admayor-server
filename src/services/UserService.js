@@ -1,6 +1,6 @@
 const ObjectId = require("mongoose").Types.ObjectId;
 const userAgentParser = require("ua-parser-js");
-const { randomBytes } = require("crypto");
+const { randomBytes, randomInt } = require("crypto");
 const createToken = require("../utils/createToken");
 const userModel = require("../models/user");
 const got = require("got");
@@ -16,39 +16,59 @@ class UserService {
   }
 
   async Register(user, userAgent, ipAddress) {
-    try {
-      const UserRecord = await this.userModel.create(user);
-      const token = createToken(UserRecord);
+    const userRecord = await this.userModel.findOne(
+      {
+        $or: [{ email: user.email }, { username: user.username }],
+      },
+      "_id"
+    );
 
-      await UserRecord.generateReferenceCode();
-      await UserRecord.updateLastLogin();
-      await this.SendVerificationEmail(UserRecord);
-      await this.createLoginInfo(UserRecord._id, userAgent, ipAddress);
-
-      if (
-        user.referenceCode &&
-        String(user.referenceCode).length === 8 &&
-        Number.isInteger(Number(user.referenceCode))
-      ) {
-        await this.userModel.updateOne(
-          { referenceCode: user.referenceCode },
-          {
-            $push: {
-              references: {
-                userId: UserRecord._id,
-              },
-            },
-          }
-        );
-      }
-
-      return {
-        message: "Successfully signed up.",
-        token,
-      };
-    } catch {
+    if (userRecord) {
       return { error: "User already exists." };
     }
+
+    let referenceCode;
+    while (true) {
+      referenceCode = randomInt(10000000, 99999999);
+      const referenceCodeCheck = await userModel.findOne(
+        { referenceCode },
+        "_id"
+      );
+
+      if (!referenceCodeCheck) {
+        break;
+      }
+    }
+
+    user.referenceCode = referenceCode;
+    const User = await this.userModel.create(user);
+    const token = createToken(User);
+
+    await User.updateLastLogin();
+    await this.SendVerificationEmail(User);
+    await this.createLoginInfo(User._id, userAgent, ipAddress);
+
+    if (
+      user.registerReferenceCode &&
+      String(user.registerReferenceCode).length === 8 &&
+      Number.isInteger(Number(user.registerReferenceCode))
+    ) {
+      await this.userModel.updateOne(
+        { referenceCode: user.registerReferenceCode },
+        {
+          $push: {
+            references: {
+              userId: User._id,
+            },
+          },
+        }
+      );
+    }
+
+    return {
+      message: "Successfully signed up.",
+      token,
+    };
   }
 
   async Login(user, userAgent, ipAddress) {

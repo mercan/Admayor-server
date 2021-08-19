@@ -20,7 +20,7 @@
         "minLength": 6,
         "maxLength": 100
       },
-      "referenceCode": {
+      "registerReferenceCode": {
         "type": "string",
         "minLength": 8,
         "maxLength": 8,

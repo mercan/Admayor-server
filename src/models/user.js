@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const Schema = mongoose.Schema;
-const { randomInt } = require("crypto");
 
 const User = new Schema(
   {
@@ -69,6 +68,7 @@ const User = new Schema(
 
     referenceCode: {
       type: Number,
+      unique: true,
       minLength: 8,
       maxLength: 8,
     },
@@ -198,24 +198,6 @@ User.methods.updateLastLogin = function () {
   });
 };
 
-User.methods.generateReferenceCode = async function () {
-  while (true) {
-    const referenceCode = randomInt(10000000, 99999999);
-    const referenceCodeCheck = await userModel.findOne(
-      { referenceCode },
-      "_id"
-    );
-
-    if (!referenceCodeCheck) {
-      return this.updateOne({
-        $set: {
-          referenceCode,
-        },
-      });
-    }
-  }
-};
-
 User.pre("save", function (next) {
   if (!this.isModified("password")) {
     return next();
@@ -225,7 +207,7 @@ User.pre("save", function (next) {
   next();
 });
 
-User.index({ email: 1, referenceCode: 1, "wallet.address": 1 });
+User.index({ "wallet.address": 1 });
 
 const userModel = mongoose.model("User", User);
 module.exports = userModel;
