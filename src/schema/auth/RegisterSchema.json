@@ -24,7 +24,6 @@
         "type": "string",
         "minLength": 8,
         "maxLength": 8,
-        "descriptoin": "Reference code for the user",
         "default": "96673282"
       }
     }

@@ -1,7 +1,6 @@
 const ObjectId = require("mongoose").Types.ObjectId;
 const adModel = require("../models/advertising");
 const reportModel = require("../models/report");
-const logger = require("../helpers/logger");
 
 class ReportService {
   constructor() {

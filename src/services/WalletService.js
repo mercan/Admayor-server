@@ -1,4 +1,3 @@
-const logger = require("../helpers/logger");
 const config = require("../config/index");
 const bitcoin = require("bitcoinjs-lib");
 const sb = require("satoshi-bitcoin");
