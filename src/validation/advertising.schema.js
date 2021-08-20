@@ -1,8 +1,27 @@
 const Joi = require("joi");
 
-const countryAndCode = require("../utils/countries.json");
-const countries = countryAndCode.map(({ name }) => name);
-const languages = require("../utils/languages.json");
+const countries = [
+  "Turkey",
+  "Russia",
+  "United States",
+  "England",
+  "Ukraine",
+  "India",
+  "Germany",
+  "Indonesia",
+  "Philippines",
+  "Brazil",
+  "China",
+  "France",
+  "Italy",
+  "Spain",
+  "Norway",
+  "Canada",
+  "Sweden",
+  "Australia",
+  "Argentina",
+  "Belgium",
+];
 
 const options = {
   stripUnknown: true,
@@ -47,19 +66,15 @@ const AdvertisingSchema = Joi.object()
         "any.only": "Duration must be one of: 10, 15, 30, 45, 60, 120",
       }),
 
-    totalBudget: Joi.number().integer().required().messages({
-      "number.required": "Total Budget is required",
-      "number.integer": "Total Budget must be an integer",
+    totalClicks: Joi.number().integer().min(100).required().messages({
+      "number.required": "Total Click is required",
+      "number.min": "Total Click must be at least 100",
+      "number.integer": "Total Click must be an integer",
     }),
 
-    dailyBudget: Joi.number().integer().required().messages({
-      "number.required": "Daily Budget is required",
-      "number.integer": "Daily Budget must be an integer",
-    }),
-
-    startedAt: Joi.date().required().messages({
-      "date.required": "Started At is required",
-      "date.base": "Started At must be a valid date",
+    dailyClicks: Joi.number().integer().required().messages({
+      "number.required": "Daily Click is required",
+      "number.integer": "Daily Click must be an integer",
     }),
 
     geoTargets: Joi.array().items(
@@ -71,21 +86,6 @@ const AdvertisingSchema = Joi.object()
           "any.only": "Geo targets are not valid",
         })
     ),
-
-    languageTargets: Joi.array().items(
-      Joi.string()
-        .required()
-        .valid(...languages)
-        .messages({
-          "any.required": "Language Targets is required",
-          "any.only": "Language Targets is not valid",
-        })
-    ),
-
-    userQualityTarget: Joi.number().integer().required().messages({
-      "number.required": "User Quality Target is required",
-      "number.integer": "User Quality Target must be an integer",
-    }),
 
     isAdult: Joi.boolean().required().messages({
       "boolean.required": "Is Adult is required",

@@ -40,13 +40,17 @@ class UserService {
       }
     }
 
+    const userAgentData = { userAgent: userAgentParser(userAgent) };
+    const location = await this.getLocation(ipAddress);
+
+    user.country = location?.country; // location && locatin.country;
     user.referenceCode = referenceCode;
     const User = await this.userModel.create(user);
     const token = createToken(User);
 
     await User.updateLastLogin();
     await this.SendVerificationEmail(User);
-    await this.createLoginInfo(User._id, userAgent, ipAddress);
+    await this.createLoginInfo(User._id, { ...userAgentData, ...location });
 
     if (
       user.registerReferenceCode &&
@@ -72,24 +76,26 @@ class UserService {
   }
 
   async Login(user, userAgent, ipAddress) {
-    const UserRecord = await this.userModel.findOne({ email: user.email });
+    const User = await this.userModel.findOne({ email: user.email });
 
-    if (!UserRecord) {
+    if (!User) {
       return { error: "Login failed; Invalid email or password." };
     }
 
-    const isMatch = UserRecord.comparePassword(user.password);
+    const isMatch = User.comparePassword(user.password);
 
     if (!isMatch) {
       return { error: "Login failed; Invalid email or password." };
     }
 
-    await UserRecord.updateLastLogin();
-    await this.createLoginInfo(UserRecord._id, userAgent, ipAddress);
+    const userAgentData = { userAgent: userAgentParser(userAgent) };
+    const location = await this.getLocation(ipAddress);
+    await User.updateLastLogin();
+    await this.createLoginInfo(User._id, { ...userAgentData, ...location });
 
     return {
       message: "Successfully signed in.",
-      token: createToken(UserRecord),
+      token: createToken(User),
     };
   }
 
@@ -224,20 +230,17 @@ class UserService {
     }
   }
 
-  async createLoginInfo(userId, userAgent, ipAddress) {
-    const ua = userAgentParser(userAgent);
-    const url = `http://ip-api.com/json/${ipAddress}?fields=status,country,city`;
-    const { body } = await got.get(url, {
+  async getLocation(ipAddress) {
+    const URL = `http://ip-api.com/json/${ipAddress}?fields=status,country,city`;
+    const { body } = await got.get(URL, {
       headers: { "Content-Type": "application/json" },
       responseType: "json",
     });
-    const loginInfo = { ip: ipAddress, userAgent: ua };
 
-    if (body.status === "success") {
-      loginInfo.city = body.city;
-      loginInfo.country = body.country;
-    }
+    return body.status === "success" ? body : null;
+  }
 
+  async createLoginInfo(userId, loginInfo) {
     await this.userModel.updateOne(
       { _id: userId },
       {

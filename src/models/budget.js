@@ -24,7 +24,7 @@ const Budget = new Schema(
           required: true,
         },
 
-        budget: {
+        earnedBudget: {
           type: Number,
           required: true,
         },

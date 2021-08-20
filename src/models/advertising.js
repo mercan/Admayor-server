@@ -1,9 +1,28 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const countryAndCode = require("../utils/countries.json");
-const countries = countryAndCode.map(({ name }) => name);
-const languages = require("../utils/languages.json");
+const countries = [
+  "Turkey",
+  "Russia",
+  "United States",
+  "England",
+  "Ukraine",
+  "India",
+  "Germany",
+  "Indonesia",
+  "Philippines",
+  "Brazil",
+  "China",
+  "France",
+  "Italy",
+  "Spain",
+  "Norway",
+  "Canada",
+  "Sweden",
+  "Australia",
+  "Argentina",
+  "Belgium",
+];
 
 const Advertising = new Schema(
   {
@@ -28,67 +47,69 @@ const Advertising = new Schema(
       required: true,
     },
 
-    configurations: [
+    type: {
+      type: String,
+      required: true,
+      lowwercase: true,
+      enum: ["surf", "autosurf", "window", "video"],
+    },
+
+    duration: {
+      type: String,
+      required: true,
+      enum: ["0", "10", "15", "30", "45", "60", "120", "240"],
+    },
+
+    totalClicks: {
+      type: Number,
+      required: true,
+      min: 100,
+    },
+
+    dailyClicks: {
+      type: Number,
+      required: true,
+    },
+
+    todayClicks: {
+      type: Number,
+      default: 0,
+    },
+
+    // startedAt: {
+    //   type: Date,
+    //   required: true,
+    // },
+
+    geoTargets: [
       {
-        type: {
-          type: String,
-          required: true,
-          lowwercase: true,
-          enum: ["surf", "autosurf", "window", "video"],
-        },
-
-        duration: {
-          type: String,
-          required: true,
-          enum: ["0", "10", "15", "30", "45", "60", "120", "240"],
-        },
-
-        totalBudget: {
-          type: Number,
-          required: true,
-        },
-
-        dailyBudget: {
-          type: Number,
-          required: true,
-        },
-
-        startedAt: {
-          type: Date,
-          required: true,
-        },
-
-        geoTargets: {
-          type: [{ type: String, enum: countries, required: true }],
-        },
-
-        languageTargets: {
-          type: [{ type: String, enum: languages, required: true }],
-        },
-
-        userQualityTarget: {
-          type: Number,
-          required: true,
-          default: 0,
-          min: 0,
-        },
-
-        isAdult: {
-          type: Boolean,
-          required: true,
-        },
-
-        isApproved: {
-          type: Boolean,
-          default: false,
-        },
-
-        isActive: {
-          type: Boolean,
-          default: false,
-        },
+        type: String,
+        enum: countries,
+        required: true,
       },
     ],
+
+    // userQualityTarget: {
+    //   type: Number,
+    //   required: true,
+    //   default: 0,
+    //   min: 0,
+    // },
+
+    isAdult: {
+      type: Boolean,
+      required: true,
+    },
+
+    isApproved: {
+      type: Boolean,
+      default: false,
+    },
+
+    isActive: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

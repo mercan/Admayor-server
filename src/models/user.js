@@ -28,6 +28,10 @@ const User = new Schema(
       maxLength: 100,
     },
 
+    country: {
+      type: String,
+    },
+
     role: {
       type: String,
       enum: ["user", "admin"],
