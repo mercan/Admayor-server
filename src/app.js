@@ -29,7 +29,7 @@ function build(opts = {}) {
   app.register(fastifyExpressPlugin).then(() => {
     app.register(swStats.getFastifyPlugin, {
       uriPath: "/stats",
-      name: "AdMayor",
+      name: "AdMayor Backend Statistics",
     });
   });
   app.register(swaggerPlugin, swaggerConfig);
