@@ -29,11 +29,9 @@ const Advertising = new Schema(
     title: {
       type: String,
       required: true,
-    },
-
-    description: {
-      type: String,
-      required: true,
+      maxLength: 100,
+      minLength: 1,
+      trim: true,
     },
 
     url: {
@@ -57,7 +55,7 @@ const Advertising = new Schema(
     duration: {
       type: String,
       required: true,
-      enum: ["0", "10", "15", "30", "45", "60", "120", "240"],
+      enum: ["15", "30", "45", "60", "120", "240"],
     },
 
     totalClicks: {
@@ -75,11 +73,6 @@ const Advertising = new Schema(
       type: Number,
       default: 0,
     },
-
-    // startedAt: {
-    //   type: Date,
-    //   required: true,
-    // },
 
     geoTargets: [
       {
