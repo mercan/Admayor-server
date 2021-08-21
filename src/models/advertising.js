@@ -30,7 +30,7 @@ const Advertising = new Schema(
       type: String,
       required: true,
       maxLength: 100,
-      minLength: 1,
+      minLength: 3,
       trim: true,
     },
 
