@@ -1,7 +1,7 @@
 const ObjectId = require("mongoose").Types.ObjectId;
 const userAgentParser = require("ua-parser-js");
 const { randomBytes, randomInt } = require("crypto");
-const createToken = require("../utils/createToken");
+const createToken = require("../helpers/createToken");
 const userModel = require("../models/user");
 const got = require("got");
 

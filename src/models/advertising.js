@@ -110,9 +110,5 @@ const Advertising = new Schema(
   }
 );
 
-// Static Methods
-
-// Istance methods
-
 const advertisingModel = mongoose.model("Advertising", Advertising);
 module.exports = advertisingModel;
