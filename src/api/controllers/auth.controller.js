@@ -1,5 +1,4 @@
 const UserService = require("../../services/UserService");
-const unavailableUsernames = require("../../utils/unavailableUsername.json");
 const unavailableEmails = require("../../utils/unavailableEmail.json");
 
 // User Validation
@@ -25,13 +24,6 @@ const register = async (req, res) => {
     return res.status(400).send({
       statusCode: 400,
       message: "Email is not available.",
-    });
-  }
-
-  if (unavailableUsernames.includes(User.username)) {
-    return res.status(400).send({
-      statusCode: 400,
-      message: "Username is not available.",
     });
   }
 

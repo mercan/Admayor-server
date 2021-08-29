@@ -1,4 +1,5 @@
 const Joi = require("joi");
+const unavailableUsername = require("../utils/unavailableUsername.json");
 
 const options = {
   stripUnknown: true,
@@ -27,10 +28,12 @@ const RegisterSchema = Joi.object()
       .lowercase()
       .min(4)
       .max(16)
+      .invalid(...unavailableUsername)
       .messages({
         "string.min": "Please enter a username with at least 4 characters.",
         "string.max": "Please enter a username with at most 16 characters.",
         "string.empty": "Please enter your username.",
+        "any.invalid": "This username is unavailable.",
         "any.required": "Please enter your username.",
       }),
 

@@ -54,10 +54,7 @@ module.exports = (() => {
       }),
       new (require("winston-daily-rotate-file"))({
         format: loggerFormat,
-        dirname:
-          config.env === "development"
-            ? "./logs/development"
-            : "./logs/production",
+        dirname: "./logs",
         filename: "%DATE%",
         extension: ".log",
         timestamp: () => dayjs().format(config.dateFormat),
