@@ -1,4 +1,4 @@
-const config = require("../config/index");
+const config = require("../config/services");
 const bitcoin = require("bitcoinjs-lib");
 const sb = require("satoshi-bitcoin");
 const crypto = require("crypto");
@@ -12,7 +12,7 @@ class WalletService {
       headers: { "Content-Type": "application/json" },
       responseType: "json",
     });
-    this.algorithm = "aes-256-ctr";
+    this.algorithm = config.wallet.encryptAlgorithm;
   }
 
   /**
@@ -149,7 +149,7 @@ class WalletService {
         redeemScript: Buffer.from(redeemScript, "hex"),
       })
       .addOutput({
-        address: config.BTCAdress, // Bizim hesabımıza gönderecek
+        address: config.wallet.BTCAddress, // Bizim hesabımıza gönderecek
         value: txData.output.value,
       });
 
@@ -190,7 +190,7 @@ class WalletService {
     const iv = crypto.randomBytes(16);
     const cipher = crypto.createCipheriv(
       this.algorithm,
-      config.walletSecretKey,
+      config.wallet.secretKey,
       iv
     );
 
@@ -203,19 +203,19 @@ class WalletService {
   }
 
   /**
-   * @param {encryptedPrivateKey} encryptedPrivateKey - Encrypted private key.
+   * @param {string} encryptedPrivateKey - Encrypted private key.
    * @returns {string} - Returns a decrypted private key.
    */
   decrypt(encryptedPrivateKey) {
-    const [iv, privateKey] = encryptedPrivateKey.split(":");
+    const [iv, cipher] = encryptedPrivateKey.split(":");
     const decipher = crypto.createDecipheriv(
       this.algorithm,
-      config.walletSecretKey,
+      config.wallet.secretKey,
       Buffer.from(iv, "hex")
     );
 
     const decrpyted = Buffer.concat([
-      decipher.update(Buffer.from(privateKey, "hex")),
+      decipher.update(Buffer.from(cipher, "hex")),
       decipher.final(),
     ]);
 

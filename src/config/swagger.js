@@ -1,7 +1,7 @@
-const config = require("./index");
+const { env, port, swaggerRoutePrefix } = require("./index");
 
 module.exports = {
-  routePrefix: config.swaggerRoutePrefix,
+  routePrefix: swaggerRoutePrefix,
   openapi: {
     info: {
       title: "AdMayor API",
@@ -13,9 +13,11 @@ module.exports = {
     },
     servers: [
       {
-        url: config.host,
-        description:
-          config.env === "development" ? "Development" : "Production",
+        url:
+          env === "development"
+            ? `http://localhost:${port}`
+            : "https://admayor.herokuapp.com",
+        description: env === "development" ? "Development" : "Production",
       },
     ],
     host: "localhost",
