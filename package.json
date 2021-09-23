@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "EKLE"
+    "url": "git+https://github.com/mercan/Admayor-server.git"
   },
   "scripts": {
     "postinstall": "cp -r ./src/lib/rate-limit/* ./node_modules/fastify-rate-limit/",
