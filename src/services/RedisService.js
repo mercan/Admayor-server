@@ -8,11 +8,11 @@ class RedisService {
     this.client = redis.createClient(this.options);
 
     this.client.on("connect", () => {
-      logger.info("Connected to Redis", { service: "Redis" });
+      logger.info("Connection to Redis", { service: "Redis" });
     });
 
     this.client.on("error", (error) => {
-      logger.error(`Redis error: ${error}`, { service: "Redis" });
+      logger.error(`Connection failed: ${error}`, { service: "Redis" });
     });
   }
 

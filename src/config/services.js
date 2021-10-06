@@ -6,4 +6,7 @@ module.exports = {
     secretKey: process.env.SERVICE_WALLET_SECRET_KEY,
     BTCAddress: process.env.SERVICE_WALLET_BTC_ADDRESS,
   },
+  rabbitmq: {
+    connectURL: process.env.RABBITMQ_CONNECT_URL,
+  },
 };

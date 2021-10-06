@@ -5,6 +5,8 @@ const createToken = require("../helpers/createToken");
 const userModel = require("../models/user");
 const got = require("got");
 
+// Services
+const RabbitMQ = require("./RabbitMQ");
 const RedisService = require("./RedisService");
 const MailService = require("./MailService");
 const WalletService = require("./WalletService");
@@ -13,6 +15,9 @@ class UserService {
   constructor({ RedisService, userModel }) {
     this.client = RedisService.init();
     this.userModel = userModel;
+
+    // RabbitMQ Connection
+    // RabbitMQ.connect();
   }
 
   async Register(user, userAgent, ipAddress) {
@@ -186,6 +191,12 @@ class UserService {
     if (User) {
       const code = `${User._id}:${randomBytes(32).toString("hex")}`;
 
+      // RabbitMQ kullanılmaya başladığında kullanılacak
+      // RabbitMQ.publish("mail:resetPassword", {
+      //   email,
+      //   passwordResetCode: code,
+      // });
+
       await MailService.sendMail("resetPassword", {
         email,
         passwordResetCode: code,
@@ -207,6 +218,13 @@ class UserService {
   async SendVerificationEmail(user) {
     const randomCode = randomBytes(124).toString("hex");
     const code = `${user._id}:${randomCode}`;
+
+    // RabbitMQ kullanılmaya başladığında kullanılacak
+    // RabbitMQ.publish("mail:registration", {
+    //   email: user.email,
+    //   username: user.username,
+    //   emailVerificationCode: code,
+    // });
 
     await MailService.sendMail("registration", {
       email: user.email,

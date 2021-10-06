@@ -55,7 +55,6 @@ const User = new Schema(
 
     bitcoinAddress: {
       type: String,
-      default: "",
     },
 
     wallet: {
