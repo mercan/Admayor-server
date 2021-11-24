@@ -16,9 +16,9 @@ class WalletService {
   }
 
   /**
-   * @param {string} address - Bitcoin address.
-   * @returns {object} - Returns a confirmed balance and an unconfirmed balance.
-   * @returns {null} - If the address is not found.
+   * @param {string} address Bitcoin address.
+   * @returns {object} Returns a confirmed balance and an unconfirmed balance.
+   * @returns {null} If the address is not found.
    */
   async getBalance(address) {
     const url = `get_address_balance/BTCTEST/${address}`;
@@ -35,9 +35,9 @@ class WalletService {
   }
 
   /**
-   * @param {string} address - Bitcoin address.
-   * @returns {object} - Returns transaction id.
-   * @returns {null} - If no unspent transaction or address is not found.
+   * @param {string} address Bitcoin address.
+   * @returns {object} Returns transaction id.
+   * @returns {null} If no unspent transaction or address is not found.
    */
   async getTxUnspent(address) {
     const url = `get_tx_unspent/BTCTEST/${address}`;
@@ -52,11 +52,11 @@ class WalletService {
   }
 
   /**
-   * @param {string} txId - Transaction ID
-   * @param {string} userBtcAddress - User's own bitcoin address.
-   * @param {string} myUserBtcAddress - The bitcoin address we created for the user.
-   * @returns {object} - Returns an object with the transaction hex, input, output, fee and status.
-   * @returns {null} - If the transaction is not found.
+   * @param {string} txId Transaction ID
+   * @param {string} userBtcAddress User's own bitcoin address.
+   * @param {string} myUserBtcAddress The bitcoin address we created for the user.
+   * @returns {object} Returns an object with the transaction hex, input, output, fee and status.
+   * @returns {null} If the transaction is not found.
    */
   async getTx(txId, userBtcAddress, myUserBtcAddress) {
     const url = `get_tx/BTCTEST/${txId}`;
@@ -163,7 +163,7 @@ class WalletService {
   }
 
   /**
-   * @returns {object} - Returns an bitcoin address and encrypted private key
+   * @returns {object} Returns an bitcoin address and encrypted private key.
    */
   createWallet() {
     const keyPair = bitcoin.ECPair.makeRandom({ network: this.network });
@@ -183,8 +183,8 @@ class WalletService {
   }
 
   /**
-   * @param {string} privateKey - Bitcoin private key.
-   * @returns {string} - Returns an encrypted private key.
+   * @param {string} privateKey Bitcoin private key.
+   * @returns {string} Returns an encrypted private key.
    */
   encrypt(privateKey) {
     const iv = crypto.randomBytes(16);
@@ -203,8 +203,8 @@ class WalletService {
   }
 
   /**
-   * @param {string} encryptedPrivateKey - Encrypted private key.
-   * @returns {string} - Returns a decrypted private key.
+   * @param {string} encryptedPrivateKey Encrypted private key.
+   * @returns {string} Returns a decrypted private key.
    */
   decrypt(encryptedPrivateKey) {
     const [iv, cipher] = encryptedPrivateKey.split(":");
@@ -223,8 +223,8 @@ class WalletService {
   }
 
   /**
-   * @param {string} address - Bitcoin address.
-   * @returns {boolean} - Returns true if the address is valid, false if it is invalid.
+   * @param {string} address Bitcoin address.
+   * @returns {boolean} Returns true if the address is valid, false if it is invalid.
    */
   isValidAddress(address) {
     try {

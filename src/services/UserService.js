@@ -36,7 +36,9 @@ class UserService {
     while (true) {
       referenceCode = randomInt(10000000, 99999999);
       const referenceCodeCheck = await userModel.findOne(
-        { referenceCode },
+        {
+          referenceCode,
+        },
         "_id"
       );
 
@@ -55,7 +57,10 @@ class UserService {
 
     await User.updateLastLogin();
     await this.SendVerificationEmail(User);
-    await this.createLoginInfo(User._id, { ...userAgentData, ...location });
+    await this.createLoginInfo(User._id, {
+      ...userAgentData,
+      ...location,
+    });
 
     if (
       user.registerReferenceCode &&
@@ -96,7 +101,10 @@ class UserService {
     const userAgentData = { userAgent: userAgentParser(userAgent) };
     const location = await this.getLocation(ipAddress);
     await User.updateLastLogin();
-    await this.createLoginInfo(User._id, { ...userAgentData, ...location });
+    await this.createLoginInfo(User._id, {
+      ...userAgentData,
+      ...location,
+    });
 
     return {
       message: "Successfully signed in.",
@@ -114,17 +122,16 @@ class UserService {
       "emailVerified"
     );
 
+    if (User.emailVerified) {
+      return { error: "Email verification failed." };
+    }
+
     const correctCode = await this.getRedisCode(
       "emailVerificationCode",
       userId
     );
 
-    if (
-      !User ||
-      User.emailVerified ||
-      !correctCode ||
-      emailVerificationCode !== correctCode
-    ) {
+    if (!User || !correctCode || emailVerificationCode !== correctCode) {
       return { error: "Email verification failed." };
     }
 
@@ -139,7 +146,7 @@ class UserService {
 
   async ResetPassword({ userId, password, code }) {
     if (!this.isValidId(userId)) {
-      return { error: "Your password could not be changed" };
+      return { error: "Your password could not be changed." };
     }
 
     const User = await this.userModel.findById(userId, "password");
