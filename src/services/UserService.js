@@ -85,6 +85,13 @@ class UserService {
     };
   }
 
+  /**
+   *
+   * @param {object} user Email and Password object to login.
+   * @param {string} userAgent userAgent of the user.
+   * @param {string} ipAddress ipAddress of the user.
+   * @returns {object} message and token object.
+   */
   async Login(user, userAgent, ipAddress) {
     const User = await this.userModel.findOne({ email: user.email });
 

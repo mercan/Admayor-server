@@ -21,10 +21,8 @@
         "maxLength": 100
       },
       "registerReferenceCode": {
-        "type": "string",
-        "minLength": 8,
-        "maxLength": 8,
-        "default": "96673282"
+        "type": "number",
+        "default": 96673282
       }
     }
   },

@@ -20,7 +20,6 @@ module.exports = {
         description: env === "development" ? "Development" : "Production",
       },
     ],
-    host: "localhost",
     schemes: ["http", "https"],
     consumes: ["application/json"],
     produces: ["application/json"],

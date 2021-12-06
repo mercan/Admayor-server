@@ -1,4 +1,4 @@
-const fastify = require("fastify");
+const Fastify = require("fastify");
 
 // Plugins
 const helmetPlugin = require("fastify-helmet");
@@ -13,31 +13,30 @@ const swaggerConfig = require("./config/swagger.js");
 const rateLimiterConfig = require("./config/rateLimiter.js");
 
 // Routes
-const allRoutes = require("./api/routes/index");
+const routes = require("./api/routes/index");
 
 // Database Connection for MongoDB
 require("./helpers/database")();
 
 // Create Fastify Server
 function build(opts = {}) {
-  const app = fastify(opts);
+  const fastify = Fastify(opts);
 
   // Initialize Plugins
-  app.register(helmetPlugin);
-  app.register(formbodyPlugin);
-  app.register(rateLimitPlugin, rateLimiterConfig);
-  app.register(fastifyExpressPlugin).then(() => {
-    app.register(swStats.getFastifyPlugin, {
+  fastify.register(helmetPlugin);
+  fastify.register(formbodyPlugin);
+  fastify.register(rateLimitPlugin, rateLimiterConfig);
+  fastify.register(fastifyExpressPlugin).then(() => {
+    fastify.register(swStats.getFastifyPlugin, {
       uriPath: "/stats",
-      name: "AdMayor Backend Statistics",
+      name: "AdMayor Statistics",
     });
   });
-  app.register(swaggerPlugin, swaggerConfig);
+  fastify.register(swaggerPlugin, swaggerConfig);
 
-  const routes = allRoutes;
-  routes.forEach((route) => app.route(route));
+  routes.forEach((route) => fastify.route(route));
 
-  return app;
+  return fastify;
 }
 
 // Export the Fastify Server

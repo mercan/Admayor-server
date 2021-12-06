@@ -66,7 +66,7 @@ const login = async (req, res) => {
     });
   }
 
-  return res.code(200).send({
+  return res.status(200).send({
     statusCode: 200,
     message: result.message,
     token: result.token,
