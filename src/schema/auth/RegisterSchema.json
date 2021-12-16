@@ -21,8 +21,8 @@
         "maxLength": 100
       },
       "registerReferenceCode": {
-        "type": "number",
-        "default": 96673282
+        "type": "string",
+        "default": "caldwell"
       }
     }
   },

@@ -1,6 +1,6 @@
 const ObjectId = require("mongoose").Types.ObjectId;
 const userAgentParser = require("ua-parser-js");
-const { randomBytes, randomInt } = require("crypto");
+const { randomBytes } = require("crypto");
 const createToken = require("../helpers/createToken");
 const userModel = require("../models/user");
 const got = require("got");
@@ -16,6 +16,7 @@ class UserService {
     this.client = RedisService.init();
     this.userModel = userModel;
 
+    // RabbitMQ kullanılmaya başlandığında kullanılacak
     // RabbitMQ Connection
     // RabbitMQ.connect();
   }
@@ -32,26 +33,11 @@ class UserService {
       return { error: "User already exists." };
     }
 
-    let referenceCode;
-    while (true) {
-      referenceCode = randomInt(10000000, 99999999);
-      const referenceCodeCheck = await userModel.findOne(
-        {
-          referenceCode,
-        },
-        "_id"
-      );
-
-      if (!referenceCodeCheck) {
-        break;
-      }
-    }
-
     const userAgentData = { userAgent: userAgentParser(userAgent) };
     const location = await this.getLocation(ipAddress);
 
     user.country = location?.country; // location && locatin.country;
-    user.referenceCode = referenceCode;
+    user.referenceCode = user.username;
     const User = await this.userModel.create(user);
     const token = createToken(User);
 
@@ -64,8 +50,8 @@ class UserService {
 
     if (
       user.registerReferenceCode &&
-      String(user.registerReferenceCode).length === 8 &&
-      Number.isInteger(Number(user.registerReferenceCode))
+      user.registerReferenceCode.length >= 4 &&
+      user.registerReferenceCode.length <= 16
     ) {
       await this.userModel.updateOne(
         { referenceCode: user.registerReferenceCode },
@@ -205,7 +191,7 @@ class UserService {
     if (User) {
       const code = `${User._id}:${randomBytes(32).toString("hex")}`;
 
-      // RabbitMQ kullanılmaya başladığında kullanılacak
+      // RabbitMQ kullanılmaya başlandığında kullanılacak
       // RabbitMQ.publish("mail:resetPassword", {
       //   email,
       //   passwordResetCode: code,
@@ -233,7 +219,7 @@ class UserService {
     const randomCode = randomBytes(124).toString("hex");
     const code = `${user._id}:${randomCode}`;
 
-    // RabbitMQ kullanılmaya başladığında kullanılacak
+    // RabbitMQ kullanılmaya başlandığında kullanılacak
     // RabbitMQ.publish("mail:registration", {
     //   email: user.email,
     //   username: user.username,

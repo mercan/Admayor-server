@@ -2,9 +2,9 @@ const Joi = require("joi");
 const unavailableUsername = require("../utils/unavailableUsername.json");
 
 const options = {
-  stripUnknown: true,
+  stripUnknown: false,
   convert: true,
-  allowUnknown: false,
+  allowUnknown: true,
 };
 
 const RegisterSchema = Joi.object()
@@ -43,8 +43,6 @@ const RegisterSchema = Joi.object()
       "string.empty": "Please enter your password.",
       "any.required": "Please enter your password.",
     }),
-
-    //registerReferenceCode: Joi.number(),
   })
   .required()
   .options(options)

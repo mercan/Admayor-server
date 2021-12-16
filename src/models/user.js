@@ -70,10 +70,12 @@ const User = new Schema(
     },
 
     referenceCode: {
-      type: Number,
-      unique: true,
-      minLength: 8,
-      maxLength: 8,
+      type: String,
+      ref: "User",
+      required: true,
+      minLength: 4,
+      maxLength: 16,
+      lowercase: true,
     },
 
     references: [
@@ -210,7 +212,14 @@ User.pre("save", function (next) {
   next();
 });
 
-User.index({ "wallet.address": 1 });
+User.index({
+  email: 1,
+  username: 1,
+  referenceCode: 1,
+  role: 1,
+  emailVerified: 1,
+  "wallet.address": 1,
+});
 
 const userModel = mongoose.model("User", User);
 module.exports = userModel;
