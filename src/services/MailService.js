@@ -28,7 +28,7 @@ class MailService {
         };
       case "d-273b0386e79d4e6ab8d574860c381c57":
         return {
-          passwordResetLink: `https://admayor.herokuapp.com/auth/passwordReset?code=${user.passwordResetCode}`,
+          passwordResetLink: `https://admayor.herokuapp.com/auth/passwordReset?code=${user.resetPasswordCode}`,
         };
       default:
         return "ERROR";

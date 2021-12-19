@@ -19,6 +19,42 @@ class RedisService {
   init() {
     return this.client;
   }
+
+  setKey(key, value, expireTime) {
+    return new Promise((resolve, reject) => {
+      this.client.set(key, value, "EX", expireTime, (err, result) => {
+        if (err) {
+          return reject(err);
+        }
+
+        resolve(result);
+      });
+    });
+  }
+
+  deleteKey(key, userId) {
+    return new Promise((resolve, reject) => {
+      this.client.del(`${key}:${userId}`, (err, result) => {
+        if (err) {
+          return reject(err);
+        }
+
+        resolve(result);
+      });
+    });
+  }
+
+  getCode(key, userId) {
+    return new Promise((resolve, reject) => {
+      this.client.get(`${key}:${userId}`, (err, result) => {
+        if (err) {
+          return reject(err);
+        }
+
+        resolve(result);
+      });
+    });
+  }
 }
 
 // Redis Config

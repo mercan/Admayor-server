@@ -6,14 +6,13 @@ const userModel = require("../models/user");
 const got = require("got");
 
 // Services
-const RabbitMQ = require("./RabbitMQ");
+// const RabbitMQ = require("./RabbitMQ");
 const RedisService = require("./RedisService");
 const MailService = require("./MailService");
 const WalletService = require("./WalletService");
 
 class UserService {
   constructor({ RedisService, userModel }) {
-    this.client = RedisService.init();
     this.userModel = userModel;
 
     // RabbitMQ kullanılmaya başlandığında kullanılacak
@@ -119,7 +118,7 @@ class UserService {
       return { error: "Email verification failed." };
     }
 
-    const correctCode = await this.getRedisCode(
+    const correctCode = await RedisService.getCode(
       "emailVerificationCode",
       userId
     );
@@ -128,7 +127,7 @@ class UserService {
       return { error: "Email verification failed." };
     }
 
-    await this.client.del(`emailVerificationCode:${userId}`);
+    await RedisService.deleteKey("emailVerificationCode", userId);
     await this.userModel.updateOne(
       { _id: userId },
       { $set: { emailVerified: true } }
@@ -143,7 +142,7 @@ class UserService {
     }
 
     const User = await this.userModel.findById(userId, "password");
-    const correctCode = await this.getRedisCode("passwordResetCode", userId);
+    const correctCode = await RedisService.getCode("resetPasswordCode", userId);
 
     if (!User || !correctCode || code !== correctCode) {
       return { error: "Your password could not be changed." };
@@ -157,7 +156,7 @@ class UserService {
       };
     }
 
-    await this.client.del(`passwordResetCode:${userId}`);
+    await RedisService.deleteKey("resetPasswordCode", userId);
     await User.resetPassword(password);
 
     return { message: "Your password has been changed." };
@@ -194,18 +193,17 @@ class UserService {
       // RabbitMQ kullanılmaya başlandığında kullanılacak
       // RabbitMQ.publish("mail:resetPassword", {
       //   email,
-      //   passwordResetCode: code,
+      //   resetPasswordCode: code,
       // });
 
       await MailService.sendMail("resetPassword", {
         email,
-        passwordResetCode: code,
+        resetPasswordCode: code,
       });
 
-      await this.client.set(
-        `passwordResetCode:${User._id}`,
+      await RedisService.setKey(
+        `resetPasswordCode:${User._id}`,
         code,
-        "EX",
         60 * 60 * 24
       );
 
@@ -232,10 +230,9 @@ class UserService {
       emailVerificationCode: code,
     });
 
-    return await this.client.set(
+    return await RedisService.setKey(
       `emailVerificationCode:${user._id}`,
       code,
-      "EX",
       60 * 60 * 24
     );
   }
@@ -267,18 +264,6 @@ class UserService {
         },
       }
     );
-  }
-
-  getRedisCode(folderName, userId) {
-    return new Promise((resolve, reject) => {
-      this.client.get(`${folderName}:${userId}`, (err, result) => {
-        if (err) {
-          return reject(err);
-        }
-
-        resolve(result);
-      });
-    });
   }
 
   isValidId(userId) {
