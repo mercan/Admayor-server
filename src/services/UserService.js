@@ -1,7 +1,6 @@
 const ObjectId = require("mongoose").Types.ObjectId;
 const userAgentParser = require("ua-parser-js");
 const { randomBytes } = require("crypto");
-const createToken = require("../helpers/createToken");
 const userModel = require("../models/user");
 const got = require("got");
 
@@ -38,7 +37,7 @@ class UserService {
     user.country = location?.country; // location && locatin.country;
     user.referenceCode = user.username;
     const User = await this.userModel.create(user);
-    const token = createToken(User);
+    const token = User.generateAuthToken();
 
     await User.updateLastLogin();
     await this.SendVerificationEmail(User);
@@ -100,7 +99,7 @@ class UserService {
 
     return {
       message: "Successfully signed in.",
-      token: createToken(User),
+      token: User.generateAuthToken(),
     };
   }
 
@@ -224,6 +223,7 @@ class UserService {
     //   emailVerificationCode: code,
     // });
 
+    // İlk kayıt olmadığı için zamanı gelince değiştirilecek.
     await MailService.sendMail("registration", {
       email: user.email,
       username: user.username,

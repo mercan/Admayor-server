@@ -69,6 +69,12 @@ module.exports = {
       },
     },
   },
+  logs: {
+    path: process.env.NODE_ENV === "test" ? "./logs/test" : "./logs",
+    fileName: "%DATE%",
+    extension: ".log",
+    dataPattern: "YYYY-MM-DD",
+  },
   swaggerRoutePrefix: "/documentation",
   apiVersion: "v1",
   authRoutePath: "auth",

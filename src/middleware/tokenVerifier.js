@@ -17,6 +17,8 @@ module.exports = (req, res, next) => {
 
   try {
     const decode = jwt.verify(bearerToken, config.jwtSecretKey);
+
+    decode.id = decode.userId;
     req.user = decode;
   } catch {
     return res.status(401).send({

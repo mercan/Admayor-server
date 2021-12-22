@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const Schema = mongoose.Schema;
+const createToken = require("../helpers/createToken");
 
 const User = new Schema(
   {
@@ -72,9 +73,9 @@ const User = new Schema(
     referenceCode: {
       type: String,
       ref: "User",
-      required: true,
       minLength: 4,
       maxLength: 16,
+      required: true,
       lowercase: true,
     },
 
@@ -167,18 +168,18 @@ const User = new Schema(
 );
 
 // Static Methods
-User.statics.passwordUpdate = async function (userId, plainPassword) {
-  const password = bcrypt.hashSync(plainPassword, 10);
+// User.statics.passwordUpdate = async function (userId, plainPassword) {
+//   const password = bcrypt.hashSync(plainPassword, 10);
 
-  return await userModel.updateOne(
-    { _id: userId },
-    {
-      $set: {
-        password,
-      },
-    }
-  );
-};
+//   return await userModel.updateOne(
+//     { _id: userId },
+//     {
+//       $set: {
+//         password,
+//       },
+//     }
+//   );
+// };
 
 // Istance methods
 User.methods.resetPassword = function (plainPassword) {
@@ -195,6 +196,12 @@ User.methods.comparePassword = function (plainPassword) {
   return bcrypt.compareSync(plainPassword, this.password);
 };
 
+User.methods.generateAuthToken = function () {
+  const token = createToken(this);
+
+  return token;
+};
+
 User.methods.updateLastLogin = function () {
   return this.updateOne({
     $set: {
@@ -204,11 +211,16 @@ User.methods.updateLastLogin = function () {
 };
 
 User.pre("save", function (next) {
-  if (!this.isModified("password")) {
-    return next();
+  // Kullanıcı emaili değiştirildiğinde emailVerified değeri false olarak değiştirilir.
+  if (this.isModified("email")) {
+    this.emailVerified = false;
   }
 
-  this.password = bcrypt.hashSync(this.password, 10);
+  // Kullanıcı şifresini hashleyerek kaydetme
+  if (this.isModified("password")) {
+    this.password = bcrypt.hashSync(this.password, 10);
+  }
+
   next();
 });
 

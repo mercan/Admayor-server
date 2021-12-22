@@ -26,12 +26,16 @@ function build(opts = {}) {
   fastify.register(helmetPlugin);
   fastify.register(formbodyPlugin);
   fastify.register(rateLimitPlugin, rateLimiterConfig);
-  fastify.register(fastifyExpressPlugin).then(() => {
-    fastify.register(swStats.getFastifyPlugin, {
-      uriPath: "/stats",
-      name: "AdMayor Statistics",
+
+  if (process.env.NODE_ENV !== "test") {
+    fastify.register(fastifyExpressPlugin).then(() => {
+      fastify.register(swStats.getFastifyPlugin, {
+        uriPath: "/stats",
+        name: "AdMayor Statistics",
+      });
     });
-  });
+  }
+
   fastify.register(swaggerPlugin, swaggerConfig);
 
   routes.forEach((route) => fastify.route(route));

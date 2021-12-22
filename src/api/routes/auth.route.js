@@ -37,7 +37,7 @@ const routes = [
     handler: authController.login,
   },
   {
-    method: "POST",
+    method: "GET",
     url: `/${config.apiVersion}/${config.authRoutePath}/emailVerify`,
     schema: emailVerifySchema,
     config: {
@@ -50,7 +50,7 @@ const routes = [
   },
   {
     method: "GET",
-    url: `/${config.apiVersion}/${config.authRoutePath}/emailVerify`,
+    url: `/${config.apiVersion}/${config.authRoutePath}/sendEmailVerify`,
     schema: sendVerificationEmailSchema,
     config: {
       rateLimit: {
@@ -61,7 +61,7 @@ const routes = [
     handler: authController.sendVerificationEmail,
   },
   {
-    method: "POST",
+    method: "PUT",
     url: `/${config.apiVersion}/${config.authRoutePath}/resetPassword`,
     schema: resetPasswordSchema,
     config: {
@@ -85,7 +85,7 @@ const routes = [
     handler: authController.sendResetPasswordEmail,
   },
   {
-    method: "POST",
+    method: "PUT",
     url: `/${config.apiVersion}/${config.authRoutePath}/changePassword`,
     schema: changePasswordSchema,
     config: {

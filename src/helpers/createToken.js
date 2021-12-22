@@ -1,13 +1,13 @@
 const config = require("../config/index");
 const jwt = require("jsonwebtoken");
 
-module.exports = ({ _id: id, email, username, userType }) =>
+module.exports = ({ _id: userId, email, username, role }) =>
   jwt.sign(
     {
-      id,
+      userId,
       email,
       username,
-      userType,
+      role,
     },
     config.jwtSecretKey,
     {

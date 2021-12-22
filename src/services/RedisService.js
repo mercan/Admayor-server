@@ -20,6 +20,10 @@ class RedisService {
     return this.client;
   }
 
+  disconnect() {
+    this.client.quit();
+  }
+
   setKey(key, value, expireTime) {
     return new Promise((resolve, reject) => {
       this.client.set(key, value, "EX", expireTime, (err, result) => {
