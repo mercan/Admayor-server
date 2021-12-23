@@ -213,7 +213,7 @@ class UserService {
   }
 
   async SendVerificationEmail(user) {
-    const randomCode = randomBytes(124).toString("hex");
+    const randomCode = randomBytes(32).toString("hex");
     const code = `${user._id}:${randomCode}`;
 
     // RabbitMQ kullanılmaya başlandığında kullanılacak
