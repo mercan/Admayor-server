@@ -61,7 +61,7 @@ const routes = [
     handler: authController.sendVerificationEmail,
   },
   {
-    method: "PUT",
+    method: "POST",
     url: `/${config.apiVersion}/${config.authRoutePath}/resetPassword`,
     schema: resetPasswordSchema,
     config: {
@@ -85,7 +85,7 @@ const routes = [
     handler: authController.sendResetPasswordEmail,
   },
   {
-    method: "PUT",
+    method: "POST",
     url: `/${config.apiVersion}/${config.authRoutePath}/changePassword`,
     schema: changePasswordSchema,
     config: {
