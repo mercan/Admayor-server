@@ -1,5 +1,5 @@
 const advertisingModel = require("../../models/advertising");
-const UserService = require("../../services/UserService");
+const UserService = require("../../services/user");
 const { AdvertisingSchema } = require("../../validation/advertising.schema");
 
 const crateSurfOrAutosurfAd = (advertising) => {

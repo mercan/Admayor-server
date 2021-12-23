@@ -1,4 +1,4 @@
-const UserService = require("../../services/UserService");
+const UserService = require("../../services/user");
 
 const createWallet = async (req, res) => {
   const wallet = await UserService.createWallet(req.user.id);

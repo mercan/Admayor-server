@@ -1,4 +1,4 @@
-const ReportService = require("../../services/ReportService");
+const ReportService = require("../../services/report");
 
 const createReport = async (req, res) => {
   const { adId, message } = req.query;

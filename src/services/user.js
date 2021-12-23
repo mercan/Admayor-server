@@ -6,12 +6,12 @@ const got = require("got");
 
 // Services
 // const RabbitMQ = require("./RabbitMQ");
-const RedisService = require("./RedisService");
-const MailService = require("./MailService");
-const WalletService = require("./WalletService");
+const RedisService = require("./redis");
+const MailService = require("./mail");
+const WalletService = require("./wallet");
 
 class UserService {
-  constructor({ RedisService, userModel }) {
+  constructor({ userModel }) {
     this.userModel = userModel;
 
     // RabbitMQ kullanılmaya başlandığında kullanılacak
@@ -324,9 +324,6 @@ class UserService {
   }
 }
 
-const Dependencies = {
-  RedisService,
-  userModel,
-};
+const Dependencies = { userModel };
 
 module.exports = new UserService(Dependencies);
