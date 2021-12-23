@@ -15,7 +15,7 @@
     "postinstall": "cp -r ./src/lib/rate-limit/* ./node_modules/fastify-rate-limit/",
     "start": "npm run postinstall && NODE_ENV=production node ./src/server.js",
     "start:dev": "npm run postinstall && NODE_ENV=development nodemon ./src/server.js",
-    "test": "NODE_ENV=test tap tests"
+    "test": "NODE_ENV=test tap test"
   },
   "dependencies": {
     "@sendgrid/mail": "^7.4.5",

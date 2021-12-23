@@ -18,8 +18,8 @@ const routes = require("./api/routes/index");
 // Database Connection for MongoDB
 require("./helpers/database")();
 
-// Create Fastify Server
-function build(opts = {}) {
+// Export the Fastify Server
+module.exports = function build(opts = {}) {
   const fastify = Fastify(opts);
 
   // Initialize Plugins
@@ -41,7 +41,4 @@ function build(opts = {}) {
   routes.forEach((route) => fastify.route(route));
 
   return fastify;
-}
-
-// Export the Fastify Server
-module.exports = build;
+};
