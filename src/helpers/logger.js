@@ -48,7 +48,7 @@ module.exports = (() => {
     transports: [
       new winston.transports.Console({
         format: winston.format.combine(
-          winston.format.colorize({ level: true }),
+          winston.format.colorize({ all: true }),
           loggerFormat
         ),
       }),
@@ -57,7 +57,7 @@ module.exports = (() => {
         dirname: config.logs.path,
         filename: config.logs.fileName,
         extension: config.logs.extension,
-        timestamp: () => dayjs().format(config.dateFormat),
+        timestamp: () => dayjs().format(config.logs.timestampPattern),
         dataPattern: config.logs.datePattern,
         zippedArchive: config.env !== "development",
       }),

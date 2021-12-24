@@ -81,9 +81,9 @@ module.exports = {
     fileName: "%DATE%",
     extension: ".log",
     dataPattern: "YYYY-MM-DD",
+    timestampPattern: "YYYY-MM-DD HH:mm:ss",
   },
   swaggerRoutePrefix: "/documentation",
   apiVersion: "v1",
   authRoutePath: "auth",
-  dateFormat: "YYYY-MM-DD HH:mm:ss",
 };
