@@ -224,14 +224,9 @@ User.pre("save", function (next) {
   next();
 });
 
-User.index({
-  email: 1,
-  username: 1,
-  referenceCode: 1,
-  role: 1,
-  emailVerified: 1,
-  "wallet.address": 1,
-});
+User.index({ "wallet.address": 1 });
+User.index({ emailVerified: 1 });
+User.index({ role: 1 });
 
 const userModel = mongoose.model("User", User);
 module.exports = userModel;
