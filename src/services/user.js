@@ -156,7 +156,7 @@ class UserService {
     }
 
     await RedisService.deleteKey("resetPasswordCode", userId);
-    await User.resetPassword(password);
+    await User.updatePassword(password);
 
     return { message: "Your password has been changed." };
   }
@@ -179,8 +179,35 @@ class UserService {
       };
     }
 
-    await User.resetPassword(newPassword);
+    await User.updatePassword(newPassword);
     return { message: "Your password has been changed." };
+  }
+
+  async ChangeEmail(userId, email) {
+    if (!this.isValidId(userId)) {
+      return { error: "Your email could not be changed." };
+    }
+
+    const user = await this.userModel.findById(userId, "email username");
+
+    if (user.email === email) {
+      return { error: "The new email cannot be the same as the old email." };
+    }
+
+    const userRecord = await this.userModel.findOne({ email }, "_id");
+
+    if (userRecord) {
+      return { error: "Your email could not be changed." };
+    }
+
+    await user.updateEmail(email);
+    // İlk kayıt olmadığı için register maili yerine sadece email doğrulama maili yollayacağız.
+    await this.SendVerificationEmail({
+      _id: userId,
+      email,
+      username: user.username,
+    });
+    return { message: "Your email has been changed." };
   }
 
   async SendResetPasswordEmail(email) {

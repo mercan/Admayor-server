@@ -10,6 +10,7 @@ const emailVerifySchema = require("../../schema/auth/EmailVerifySchema.json");
 const resetPasswordSchema = require("../../schema/auth/ResetPasswordSchema.json");
 const sendResetPasswordEmailSchema = require("../../schema/auth/SendResetPasswordEmailSchema.json");
 const changePasswordSchema = require("../../schema/auth/ChangePasswordSchema.json");
+const changeEmailSchema = require("../../schema/auth/ChangeEmailSchema.json");
 
 const routes = [
   {
@@ -96,6 +97,19 @@ const routes = [
     },
     preValidation: tokenVerifier,
     handler: authController.changePassword,
+  },
+  {
+    method: "GET",
+    url: `/${config.apiVersion}/${config.authRoutePath}/changeEmail`,
+    schema: changeEmailSchema,
+    config: {
+      rateLimit: {
+        max: config.rateLimit.auth.changeEmail.max,
+        timeWindow: config.rateLimit.auth.changeEmail.timeWindow,
+      },
+    },
+    preValidation: tokenVerifier,
+    handler: authController.changeEmail,
   },
 ];
 

@@ -7,6 +7,7 @@ const {
   LoginSchema,
   ResetPasswordSchema,
   ChangePasswordSchema,
+  ChangeEmailSchema,
   PasswordResetValidateSchema,
 } = require("../../validation/user.schema");
 
@@ -177,6 +178,31 @@ const changePassword = async (req, res) => {
   });
 };
 
+const changeEmail = async (req, res) => {
+  const { error, value: User } = ChangeEmailSchema.validate(req.query);
+
+  if (error) {
+    return res.status(400).send({
+      statusCode: 400,
+      message: error.details[0].message,
+    });
+  }
+
+  const result = await UserService.ChangeEmail(req.user.id, User.email);
+
+  if (result.error) {
+    return res.status(400).send({
+      statusCode: 400,
+      message: result.error,
+    });
+  }
+
+  return res.status(200).send({
+    statusCode: 200,
+    message: result.message,
+  });
+};
+
 const sendResetPasswordEmail = async (req, res) => {
   const { error, value } = ResetPasswordSchema.validate(req.query);
 
@@ -252,4 +278,5 @@ module.exports = {
   resetPassword,
   sendResetPasswordEmail,
   changePassword,
+  changeEmail,
 };

@@ -67,6 +67,13 @@ module.exports = {
           process.env.RATE_LIMIT_AUTH_CHANGE_PASSWORD_TIME_WINDOW
         ),
       },
+
+      changeEmail: {
+        max: Number(process.env.RATE_LIMIT_AUTH_CHANGE_EMAIL_MAX),
+        timeWindow: Number(
+          process.env.RATE_LIMIT_AUTH_CHANGE_EMAIL_TIME_WINDOW
+        ),
+      },
     },
   },
   logs: {

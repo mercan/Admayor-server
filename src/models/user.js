@@ -182,12 +182,22 @@ const User = new Schema(
 // };
 
 // Istance methods
-User.methods.resetPassword = function (plainPassword) {
+User.methods.updatePassword = function (plainPassword) {
   const password = bcrypt.hashSync(plainPassword, 10);
 
   return this.updateOne({
     $set: {
       password,
+    },
+  });
+};
+
+User.methods.updateEmail = function (email) {
+  // Kullanıcı emaili değiştirildiğinde emailVerified değeri false olarak değiştirilir.
+  return this.updateOne({
+    $set: {
+      email,
+      emailVerified: false,
     },
   });
 };
@@ -211,11 +221,6 @@ User.methods.updateLastLogin = function () {
 };
 
 User.pre("save", function (next) {
-  // Kullanıcı emaili değiştirildiğinde emailVerified değeri false olarak değiştirilir.
-  if (this.isModified("email")) {
-    this.emailVerified = false;
-  }
-
   // Kullanıcı şifresini hashleyerek kaydetme
   if (this.isModified("password")) {
     this.password = bcrypt.hashSync(this.password, 10);

@@ -140,10 +140,32 @@ const ChangePasswordSchema = Joi.object()
     "object.base": "Please fill out all required fields.",
   });
 
+const ChangeEmailSchema = Joi.object()
+  .keys({
+    email: Joi.string()
+      .required()
+      .trim()
+      .lowercase()
+      .email()
+      .max(100)
+      .messages({
+        "string.max": "Email must be 100 characters or less.",
+        "string.email": "Please enter a valid email address.",
+        "string.empty": "Please enter your email address.",
+        "any.required": "Please enter your email address.",
+      }),
+  })
+  .required()
+  .options(options)
+  .messages({
+    "object.base": "Please fill out all required fields.",
+  });
+
 module.exports = {
   RegisterSchema,
   LoginSchema,
   ResetPasswordSchema,
   PasswordResetValidateSchema,
   ChangePasswordSchema,
+  ChangeEmailSchema,
 };
