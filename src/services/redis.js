@@ -48,7 +48,7 @@ class RedisService {
     });
   }
 
-  getCode(key, userId) {
+  getKey(key, userId) {
     return new Promise((resolve, reject) => {
       this.client.get(`${key}:${userId}`, (err, result) => {
         if (err) {

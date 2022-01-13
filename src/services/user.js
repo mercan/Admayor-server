@@ -117,7 +117,7 @@ class UserService {
       return { error: "Email verification failed." };
     }
 
-    const correctCode = await RedisService.getCode(
+    const correctCode = await RedisService.getKey(
       "emailVerificationCode",
       userId
     );
@@ -141,7 +141,7 @@ class UserService {
     }
 
     const User = await this.userModel.findById(userId, "password");
-    const correctCode = await RedisService.getCode("resetPasswordCode", userId);
+    const correctCode = await RedisService.getKey("resetPasswordCode", userId);
 
     if (!User || !correctCode || code !== correctCode) {
       return { error: "Your password could not be changed." };
