@@ -32,9 +32,19 @@ class UserService {
     }
 
     const userAgentData = { userAgent: userAgentParser(userAgent) };
-    const location = await this.getLocation(ipAddress);
+    let location = { location: await this.getLocation(ipAddress) };
 
-    user.country = location?.country; // location && locatin.country;
+    if (!location.location) {
+      location = {
+        location: {
+          ipAddress,
+          country: "Unknown",
+          city: "Unknown",
+        },
+      };
+    }
+
+    user.country = location.location?.country ?? "Unknown"; // location && locatin.country;
     user.referenceCode = user.username;
     const User = await this.userModel.create(user);
     const token = User.generateAuthToken();

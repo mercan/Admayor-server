@@ -29,7 +29,7 @@ const User = new Schema(
       maxLength: 100,
     },
 
-    country: String,
+    country: { type: String },
 
     role: {
       type: String,
@@ -52,13 +52,13 @@ const User = new Schema(
       default: 0,
     },
 
-    bitcoinAddress: String,
-    bitcoinAddressCreatedAt: Date,
+    bitcoinAddress: { type: String },
+    bitcoinAddressCreatedAt: { type: Date },
 
     wallet: {
-      address: String,
-      privateKey: String,
-      createdAt: Date,
+      address: { type: String },
+      privateKey: { type: String },
+      createdAt: { type: Date },
     },
 
     referenceCode: {
@@ -88,28 +88,27 @@ const User = new Schema(
     loginInfo: [
       {
         _id: false,
-        ip: {
-          type: String,
-          required: true,
+        ipAddress: { type: String },
+        location: {
+          city: { type: String },
+          country: { type: String },
         },
-        city: String,
-        country: String,
         userAgent: {
           browser: {
-            name: String,
-            version: String,
+            name: { type: String },
+            version: { type: String },
           },
           os: {
-            name: String,
-            version: String,
+            name: { type: String },
+            version: { type: String },
           },
           device: {
-            vendor: String,
-            model: String,
-            type: String,
+            vendor: { type: String },
+            model: { type: String },
+            type: { type: String },
           },
         },
-        createdAt: {
+        loginAt: {
           type: Date,
           default: Date.now,
         },
