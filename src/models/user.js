@@ -29,9 +29,7 @@ const User = new Schema(
       maxLength: 100,
     },
 
-    country: {
-      type: String,
-    },
+    country: String,
 
     role: {
       type: String,
@@ -54,20 +52,13 @@ const User = new Schema(
       default: 0,
     },
 
-    bitcoinAddress: {
-      type: String,
-    },
+    bitcoinAddress: String,
+    bitcoinAddressCreatedAt: Date,
 
     wallet: {
-      address: {
-        type: String,
-      },
-      privateKey: {
-        type: String,
-      },
-      createdAt: {
-        type: Date,
-      },
+      address: String,
+      privateKey: String,
+      createdAt: Date,
     },
 
     referenceCode: {
@@ -101,39 +92,21 @@ const User = new Schema(
           type: String,
           required: true,
         },
-        city: {
-          type: String,
-        },
-        country: {
-          type: String,
-        },
+        city: String,
+        country: String,
         userAgent: {
           browser: {
-            name: {
-              type: String,
-            },
-            version: {
-              type: String,
-            },
+            name: String,
+            version: String,
           },
           os: {
-            name: {
-              type: String,
-            },
-            version: {
-              type: String,
-            },
+            name: String,
+            version: String,
           },
           device: {
-            vendor: {
-              type: String,
-            },
-            model: {
-              type: String,
-            },
-            type: {
-              type: String,
-            },
+            vendor: String,
+            model: String,
+            type: String,
           },
         },
         createdAt: {
@@ -157,9 +130,7 @@ const User = new Schema(
       },
     ],
 
-    lastLoginAt: {
-      type: Date,
-    },
+    lastLoginAt: Date,
   },
   {
     timestamps: true,
@@ -193,7 +164,6 @@ User.methods.updatePassword = function (plainPassword) {
 };
 
 User.methods.updateEmail = function (email) {
-  // Kullanıcı emaili değiştirildiğinde emailVerified değeri false olarak değiştirilir.
   return this.updateOne({
     $set: {
       email,
@@ -221,7 +191,6 @@ User.methods.updateLastLogin = function () {
 };
 
 User.pre("save", function (next) {
-  // Kullanıcı şifresini hashleyerek kaydetme
   if (this.isModified("password")) {
     this.password = bcrypt.hashSync(this.password, 10);
   }

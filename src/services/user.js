@@ -284,7 +284,9 @@ class UserService {
 
   async createLoginInfo(userId, loginInfo) {
     await this.userModel.updateOne(
-      { _id: userId },
+      {
+        _id: userId,
+      },
       {
         $push: {
           loginInfo,
@@ -293,6 +295,7 @@ class UserService {
     );
   }
 
+  // User id ile arama yapılırken id değerinin geçerli olup olmadığını kontrol eder.
   isValidId(userId) {
     return ObjectId.isValid(userId);
   }
@@ -334,18 +337,27 @@ class UserService {
       return { error: "Invalid bitcoin address." };
     }
 
-    const User = await this.userModel.findById(userId, "bitcoinAddress");
+    const userRecord = await this.userModel.findById(userId, "bitcoinAddress");
 
-    if (!User) {
+    if (!userRecord) {
       return { error: "User not found." };
     }
 
-    if (User.bitcoinAddress === address) {
+    if (userRecord.bitcoinAddress === address) {
       return { message: "Bitcoin address saved." };
     }
 
-    User.bitcoinAddress = address;
-    await User.save();
+    await this.userModel.updateOne(
+      {
+        _id: userId,
+      },
+      {
+        $set: {
+          bitcoinAddress: address,
+          bitcoinAddressCreatedAt: new Date(),
+        },
+      }
+    );
 
     return { message: "Bitcoin address saved." };
   }
