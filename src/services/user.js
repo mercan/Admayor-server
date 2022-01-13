@@ -43,8 +43,7 @@ class UserService {
       };
     }
 
-    location.location.ipAddress = ipAddress;
-
+    location.ipAddress = ipAddress;
     user.country = location.location?.country ?? "Unknown"; // location && locatin.country;
     user.referenceCode = user.username;
     const User = await this.userModel.create(user);
