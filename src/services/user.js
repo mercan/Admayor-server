@@ -37,12 +37,13 @@ class UserService {
     if (!location.location) {
       location = {
         location: {
-          ipAddress,
           country: "Unknown",
           city: "Unknown",
         },
       };
     }
+
+    location.location.ipAddress = ipAddress;
 
     user.country = location.location?.country ?? "Unknown"; // location && locatin.country;
     user.referenceCode = user.username;
