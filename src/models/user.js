@@ -138,18 +138,6 @@ const User = new Schema(
 );
 
 // Static Methods
-// User.statics.passwordUpdate = async function (userId, plainPassword) {
-//   const password = bcrypt.hashSync(plainPassword, 10);
-
-//   return await userModel.updateOne(
-//     { _id: userId },
-//     {
-//       $set: {
-//         password,
-//       },
-//     }
-//   );
-// };
 
 // Istance methods
 User.methods.updatePassword = function (plainPassword) {
@@ -176,9 +164,7 @@ User.methods.comparePassword = function (plainPassword) {
 };
 
 User.methods.generateAuthToken = function () {
-  const token = createToken(this);
-
-  return token;
+  return createToken(this);
 };
 
 User.methods.updateLastLogin = function () {

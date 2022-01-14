@@ -7,7 +7,7 @@ module.exports = (req, res, next) => {
   if (!bearerHeader) {
     return res.status(403).send({
       statusCode: 403,
-      message: "Missing authorization header.",
+      message: "Missing authorization header",
     });
   }
 
