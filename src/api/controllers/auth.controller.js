@@ -21,10 +21,10 @@ const register = async (req, res) => {
     });
   }
 
-  if (unavailableEmails.some((email) => email === User.email.split("@")[1])) {
+  if (unavailableEmails.includes(User.email.split("@")[1])) {
     return res.status(400).send({
       statusCode: 400,
-      message: "Email is not available.",
+      message: "Email domain is not allowed",
     });
   }
 

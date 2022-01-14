@@ -1,5 +1,5 @@
 const Joi = require("joi");
-const unavailableUsername = require("../utils/unavailableUsername.json");
+const unavailableUsernames = require("../utils/unavailableUsername.json");
 
 const options = {
   stripUnknown: false,
@@ -16,10 +16,10 @@ const RegisterSchema = Joi.object()
       .email()
       .max(100)
       .messages({
-        "string.max": "Email must be 100 characters or less.",
-        "string.email": "Please enter a valid email address.",
-        "string.empty": "Please enter your email address.",
-        "any.required": "Please enter your email address.",
+        "string.max": "Email must be 100 characters or less",
+        "string.email": "Please enter a valid email address",
+        "string.empty": "Please enter your email address",
+        "any.required": "Please enter your email address",
       }),
 
     username: Joi.string()
@@ -28,26 +28,26 @@ const RegisterSchema = Joi.object()
       .lowercase()
       .min(4)
       .max(16)
-      .invalid(...unavailableUsername)
+      .invalid(...unavailableUsernames)
       .messages({
-        "string.min": "Please enter a username with at least 4 characters.",
-        "string.max": "Please enter a username with at most 16 characters.",
-        "string.empty": "Please enter your username.",
-        "any.invalid": "This username is unavailable.",
-        "any.required": "Please enter your username.",
+        "string.min": "Please enter a username with at least 4 characters",
+        "string.max": "Please enter a username with at most 16 characters",
+        "string.empty": "Please enter your username",
+        "any.invalid": "This username is unavailable",
+        "any.required": "Please enter your username",
       }),
 
     password: Joi.string().required().min(6).max(100).messages({
-      "string.min": "Please enter a password with at least 6 characters.",
-      "string.max": "Please enter a password with at most 100 characters.",
-      "string.empty": "Please enter your password.",
-      "any.required": "Please enter your password.",
+      "string.min": "Please enter a password with at least 6 characters",
+      "string.max": "Please enter a password with at most 100 characters",
+      "string.empty": "Please enter your password",
+      "any.required": "Please enter your password",
     }),
   })
   .required()
   .options(options)
   .messages({
-    "object.base": "Please fill out all required fields.",
+    "object.base": "Please fill out all required fields",
   });
 
 const LoginSchema = Joi.object()
@@ -59,23 +59,23 @@ const LoginSchema = Joi.object()
       .email()
       .max(100)
       .messages({
-        "string.max": "Email must be 100 characters or less.",
-        "string.email": "Please enter a valid email address.",
-        "string.empty": "Please enter your email address.",
-        "any.required": "Please enter your email address.",
+        "string.max": "Email must be 100 characters or less",
+        "string.email": "Please enter a valid email address",
+        "string.empty": "Please enter your email address",
+        "any.required": "Please enter your email address",
       }),
 
     password: Joi.string().required().min(6).max(100).messages({
-      "string.min": "Please enter a password with at least 6 characters.",
-      "string.max": "Please enter a password with at most 100 characters.",
-      "string.empty": "Please enter your password.",
-      "any.required": "Please enter your password.",
+      "string.min": "Please enter a password with at least 6 characters",
+      "string.max": "Please enter a password with at most 100 characters",
+      "string.empty": "Please enter your password",
+      "any.required": "Please enter your password",
     }),
   })
   .required()
   .options(options)
   .messages({
-    "object.base": "Please fill out all required fields.",
+    "object.base": "Please fill out all required fields",
   });
 
 const ResetPasswordSchema = Joi.object()
@@ -87,16 +87,16 @@ const ResetPasswordSchema = Joi.object()
       .email()
       .max(100)
       .messages({
-        "string.max": "Email must be 100 characters or less.",
-        "string.email": "Please enter a valid email address.",
-        "string.empty": "Please enter your email address.",
-        "any.required": "Please enter your email address.",
+        "string.max": "Email must be 100 characters or less",
+        "string.email": "Please enter a valid email address",
+        "string.empty": "Please enter your email address",
+        "any.required": "Please enter your email address",
       }),
   })
   .required()
   .options(options)
   .messages({
-    "object.base": "Please fill out all required fields.",
+    "object.base": "Please fill out all required fields",
   });
 
 const PasswordResetValidateSchema = Joi.object()
@@ -106,38 +106,38 @@ const PasswordResetValidateSchema = Joi.object()
     }),
 
     password: Joi.string().required().min(6).max(100).messages({
-      "string.min": "Please enter a password with at least 6 characters.",
-      "string.max": "Please enter a password with at most 100 characters.",
-      "string.empty": "Please enter your password.",
-      "any.required": "Please enter your password.",
+      "string.min": "Please enter a password with at least 6 characters",
+      "string.max": "Please enter a password with at most 100 characters",
+      "string.empty": "Please enter your password",
+      "any.required": "Please enter your password",
     }),
   })
   .required()
   .options(options)
   .messages({
-    "object.base": "Please fill out all required fields.",
+    "object.base": "Please fill out all required fields",
   });
 
 const ChangePasswordSchema = Joi.object()
   .keys({
     password: Joi.string().required().min(6).max(100).messages({
-      "string.min": "Please enter a password with at least 6 characters.",
-      "string.max": "Please enter a password with at most 100 characters.",
-      "string.empty": "Please enter your password.",
-      "any.required": "Please enter your password.",
+      "string.min": "Please enter a password with at least 6 characters",
+      "string.max": "Please enter a password with at most 100 characters",
+      "string.empty": "Please enter your password",
+      "any.required": "Please enter your password",
     }),
 
     newPassword: Joi.string().required().min(6).max(100).messages({
-      "string.min": "Please enter a password with at least 6 characters.",
-      "string.max": "Please enter a password with at most 100 characters.",
-      "string.empty": "Please enter your password.",
-      "any.required": "Please enter your password.",
+      "string.min": "Please enter a password with at least 6 characters",
+      "string.max": "Please enter a password with at most 100 characters",
+      "string.empty": "Please enter your password",
+      "any.required": "Please enter your password",
     }),
   })
   .required()
   .options(options)
   .messages({
-    "object.base": "Please fill out all required fields.",
+    "object.base": "Please fill out all required fields",
   });
 
 const ChangeEmailSchema = Joi.object()
@@ -149,16 +149,16 @@ const ChangeEmailSchema = Joi.object()
       .email()
       .max(100)
       .messages({
-        "string.max": "Email must be 100 characters or less.",
-        "string.email": "Please enter a valid email address.",
-        "string.empty": "Please enter your email address.",
-        "any.required": "Please enter your email address.",
+        "string.max": "Email must be 100 characters or less",
+        "string.email": "Please enter a valid email address",
+        "string.empty": "Please enter your email address",
+        "any.required": "Please enter your email address",
       }),
   })
   .required()
   .options(options)
   .messages({
-    "object.base": "Please fill out all required fields.",
+    "object.base": "Please fill out all required fields",
   });
 
 module.exports = {
