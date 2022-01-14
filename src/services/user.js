@@ -28,7 +28,7 @@ class UserService {
     );
 
     if (userRecord) {
-      return { error: "User already exists." };
+      return { error: "User already exists" };
     }
 
     const userAgentData = { userAgent: userAgentParser(userAgent) };
@@ -74,7 +74,7 @@ class UserService {
     }
 
     return {
-      message: "Successfully signed up.",
+      message: "Successfully signed up",
       token,
     };
   }
@@ -90,13 +90,13 @@ class UserService {
     const User = await this.userModel.findOne({ email: user.email });
 
     if (!User) {
-      return { error: "Login failed; Invalid email or password." };
+      return { error: "Login failed; Invalid email or password" };
     }
 
     const isMatch = User.comparePassword(user.password);
 
     if (!isMatch) {
-      return { error: "Login failed; Invalid email or password." };
+      return { error: "Login failed; Invalid email or password" };
     }
 
     const userAgentData = { userAgent: userAgentParser(userAgent) };
@@ -108,14 +108,14 @@ class UserService {
     });
 
     return {
-      message: "Successfully signed in.",
+      message: "Successfully signed in",
       token: User.generateAuthToken(),
     };
   }
 
   async verifyEmail(userId, emailVerificationCode) {
     if (!this.isValidId(userId)) {
-      return { error: "Email verification failed." };
+      return { error: "Email verification failed" };
     }
 
     const User = await this.userModel.findById(
@@ -124,7 +124,7 @@ class UserService {
     );
 
     if (User.emailVerified) {
-      return { error: "Email verification failed." };
+      return { error: "Email verification failed" };
     }
 
     const correctCode = await RedisService.getKey(
@@ -133,81 +133,87 @@ class UserService {
     );
 
     if (!User || !correctCode || emailVerificationCode !== correctCode) {
-      return { error: "Email verification failed." };
+      return { error: "Email verification failed" };
     }
 
     await RedisService.deleteKey("emailVerificationCode", userId);
     await this.userModel.updateOne(
-      { _id: userId },
-      { $set: { emailVerified: true } }
+      {
+        _id: userId,
+      },
+      {
+        $set: {
+          emailVerified: true,
+        },
+      }
     );
 
-    return { message: "Email verified successfully." };
+    return { message: "Email verified successfully" };
   }
 
   async resetPassword({ userId, password, code }) {
     if (!this.isValidId(userId)) {
-      return { error: "Your password could not be changed." };
+      return { error: "Your password could not be changed" };
     }
 
     const User = await this.userModel.findById(userId, "password");
     const correctCode = await RedisService.getKey("resetPasswordCode", userId);
 
     if (!User || !correctCode || code !== correctCode) {
-      return { error: "Your password could not be changed." };
+      return { error: "Your password could not be changed" };
     }
 
     const isMatch = User.comparePassword(password);
 
     if (isMatch) {
       return {
-        error: "The new password cannot be the same as the old password.",
+        error: "The new password cannot be the same as the old password",
       };
     }
 
     await RedisService.deleteKey("resetPasswordCode", userId);
     await User.updatePassword(password);
 
-    return { message: "Your password has been changed." };
+    return { message: "Your password has been changed" };
   }
 
   async changePassword(userId, password, newPassword) {
     if (!this.isValidId(userId)) {
-      return { error: "Your password could not be changed." };
+      return { error: "Your password could not be changed" };
     }
 
     const User = await this.userModel.findById(userId, "password");
     const isMatch = User.comparePassword(password);
 
     if (!isMatch) {
-      return { error: "Your password could not be changed." };
+      return { error: "Your password could not be changed" };
     }
 
     if (User.comparePassword(newPassword)) {
       return {
-        error: "The new password cannot be the same as the old password.",
+        error: "The new password cannot be the same as the old password",
       };
     }
 
     await User.updatePassword(newPassword);
-    return { message: "Your password has been changed." };
+    return { message: "Your password has been changed" };
   }
 
   async changeEmail(userId, email) {
     if (!this.isValidId(userId)) {
-      return { error: "Your email could not be changed." };
+      return { error: "Your email could not be changed" };
     }
 
     const user = await this.userModel.findById(userId, "email username");
 
     if (user.email === email) {
-      return { error: "The new email cannot be the same as the old email." };
+      return { error: "The new email cannot be the same as the old email" };
     }
 
     const userRecord = await this.userModel.findOne({ email }, "_id");
 
     if (userRecord) {
-      return { error: "Your email could not be changed." };
+      return { error: "Your email could not be changed" };
     }
 
     await user.updateEmail(email);
@@ -217,7 +223,7 @@ class UserService {
       email,
       username: user.username,
     });
-    return { message: "Your email has been changed." };
+    return { message: "Your email has been changed" };
   }
 
   async sendResetPasswordEmail(email) {
@@ -243,10 +249,10 @@ class UserService {
         60 * 60 * 24
       );
 
-      return { message: "Password reset email sent." };
+      return { message: "Password reset email sent" };
     }
 
-    return { error: "Password reset email failed." };
+    return { error: "Password reset email failed" };
   }
 
   async sendVerificationEmail(user) {
@@ -315,11 +321,11 @@ class UserService {
     const User = await this.userModel.findById(userId, "wallet");
 
     if (!User) {
-      return { error: "User not found." };
+      return { error: "User not found" };
     }
 
     if (User.wallet?.address) {
-      return { error: "Address already exists." };
+      return { error: "Address already exists" };
     }
 
     const wallet = WalletService.createWallet(userId);
@@ -337,24 +343,24 @@ class UserService {
     await this.userModel.updateOne({ _id: userId }, { $set: { wallet } });
 
     return {
-      message: "Wallet created successfully.",
+      message: "Wallet created successfully",
       address: wallet.address,
     };
   }
 
   async saveBTCAddress(userId, address) {
     if (!WalletService.isValidAddress(address)) {
-      return { error: "Invalid bitcoin address." };
+      return { error: "Invalid bitcoin address" };
     }
 
     const userRecord = await this.userModel.findById(userId, "bitcoinAddress");
 
     if (!userRecord) {
-      return { error: "User not found." };
+      return { error: "User not found" };
     }
 
     if (userRecord.bitcoinAddress === address) {
-      return { message: "Bitcoin address saved." };
+      return { message: "Bitcoin address saved" };
     }
 
     await this.userModel.updateOne(
@@ -369,7 +375,7 @@ class UserService {
       }
     );
 
-    return { message: "Bitcoin address saved." };
+    return { message: "Bitcoin address saved" };
   }
 }
 
