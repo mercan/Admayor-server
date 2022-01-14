@@ -19,7 +19,7 @@ class UserService {
     // RabbitMQ.connect();
   }
 
-  async Register(user, userAgent, ipAddress) {
+  async register(user, userAgent, ipAddress) {
     const userRecord = await this.userModel.findOne(
       {
         $or: [{ email: user.email }, { username: user.username }],
@@ -50,7 +50,7 @@ class UserService {
     const token = User.generateAuthToken();
 
     await User.updateLastLogin();
-    await this.SendVerificationEmail(User);
+    await this.sendVerificationEmail(User);
     await this.createLoginInfo(User._id, {
       ...userAgentData,
       ...location,
@@ -86,7 +86,7 @@ class UserService {
    * @param {string} ipAddress ipAddress of the user.
    * @returns {object} message and token object.
    */
-  async Login(user, userAgent, ipAddress) {
+  async login(user, userAgent, ipAddress) {
     const User = await this.userModel.findOne({ email: user.email });
 
     if (!User) {
@@ -113,7 +113,7 @@ class UserService {
     };
   }
 
-  async VerifyEmail(userId, emailVerificationCode) {
+  async verifyEmail(userId, emailVerificationCode) {
     if (!this.isValidId(userId)) {
       return { error: "Email verification failed." };
     }
@@ -145,7 +145,7 @@ class UserService {
     return { message: "Email verified successfully." };
   }
 
-  async ResetPassword({ userId, password, code }) {
+  async resetPassword({ userId, password, code }) {
     if (!this.isValidId(userId)) {
       return { error: "Your password could not be changed." };
     }
@@ -171,7 +171,7 @@ class UserService {
     return { message: "Your password has been changed." };
   }
 
-  async ChangePassword(userId, password, newPassword) {
+  async changePassword(userId, password, newPassword) {
     if (!this.isValidId(userId)) {
       return { error: "Your password could not be changed." };
     }
@@ -193,7 +193,7 @@ class UserService {
     return { message: "Your password has been changed." };
   }
 
-  async ChangeEmail(userId, email) {
+  async changeEmail(userId, email) {
     if (!this.isValidId(userId)) {
       return { error: "Your email could not be changed." };
     }
@@ -212,7 +212,7 @@ class UserService {
 
     await user.updateEmail(email);
     // İlk kayıt olmadığı için register maili yerine sadece email doğrulama maili yollayacağız.
-    await this.SendVerificationEmail({
+    await this.sendVerificationEmail({
       _id: userId,
       email,
       username: user.username,
@@ -220,7 +220,7 @@ class UserService {
     return { message: "Your email has been changed." };
   }
 
-  async SendResetPasswordEmail(email) {
+  async sendResetPasswordEmail(email) {
     const User = await this.userModel.findOne({ email }, "_id");
 
     if (User) {
@@ -249,7 +249,7 @@ class UserService {
     return { error: "Password reset email failed." };
   }
 
-  async SendVerificationEmail(user) {
+  async sendVerificationEmail(user) {
     const randomCode = randomBytes(32).toString("hex");
     const code = `${user._id}:${randomCode}`;
 

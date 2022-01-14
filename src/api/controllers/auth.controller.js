@@ -30,7 +30,7 @@ const register = async (req, res) => {
 
   const userAgent = req.headers["user-agent"];
   const ipAddress = req.ip || req.ips[0];
-  const result = await UserService.Register(User, userAgent, ipAddress);
+  const result = await UserService.register(User, userAgent, ipAddress);
 
   if (result.error) {
     return res.status(409).send({
@@ -58,7 +58,7 @@ const login = async (req, res) => {
 
   const userAgent = req.headers["user-agent"];
   const ipAddress = req.ip || req.ips[0];
-  const result = await UserService.Login(User, userAgent, ipAddress);
+  const result = await UserService.login(User, userAgent, ipAddress);
 
   if (result.error) {
     return res.status(400).send({
@@ -93,7 +93,7 @@ const emailVerify = async (req, res) => {
     });
   }
 
-  const result = await UserService.VerifyEmail(userId, emailVerificationCode);
+  const result = await UserService.verifyEmail(userId, emailVerificationCode);
 
   if (result.error) {
     return res.status(400).send({
@@ -130,7 +130,7 @@ const resetPassword = async (req, res) => {
     });
   }
 
-  const result = await UserService.ResetPassword({
+  const result = await UserService.resetPassword({
     userId,
     password: value.password,
     code: value.code,
@@ -159,7 +159,7 @@ const changePassword = async (req, res) => {
     });
   }
 
-  const result = await UserService.ChangePassword(
+  const result = await UserService.changePassword(
     req.user.id,
     User.password,
     User.newPassword
@@ -188,7 +188,7 @@ const changeEmail = async (req, res) => {
     });
   }
 
-  const result = await UserService.ChangeEmail(req.user.id, User.email);
+  const result = await UserService.changeEmail(req.user.id, User.email);
 
   if (result.error) {
     return res.status(400).send({
@@ -213,7 +213,7 @@ const sendResetPasswordEmail = async (req, res) => {
     });
   }
 
-  const result = await UserService.SendResetPasswordEmail(value.email);
+  const result = await UserService.sendResetPasswordEmail(value.email);
 
   if (result.error) {
     return res.status(400).send({
@@ -257,7 +257,7 @@ const sendVerificationEmail = async (req, res) => {
     });
   }
 
-  await UserService.SendVerificationEmail({
+  await UserService.sendVerificationEmail({
     _id: User._id,
     email: User.email,
     username: User.username,
