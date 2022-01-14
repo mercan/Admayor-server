@@ -87,13 +87,13 @@ class UserService {
    * @returns {object} message and token object.
    */
   async login(user, userAgent, ipAddress) {
-    const User = await this.userModel.findOne({ email: user.email });
+    const userRecord = await this.userModel.findOne({ email: user.email });
 
-    if (!User) {
+    if (!userRecord) {
       return { error: "Login failed; Invalid email or password" };
     }
 
-    const isMatch = User.comparePassword(user.password);
+    const isMatch = userRecord.comparePassword(user.password);
 
     if (!isMatch) {
       return { error: "Login failed; Invalid email or password" };
@@ -101,15 +101,15 @@ class UserService {
 
     const userAgentData = { userAgent: userAgentParser(userAgent) };
     const location = await this.getLocation(ipAddress);
-    await User.updateLastLogin();
-    await this.createLoginInfo(User._id, {
+    await userRecord.updateLastLogin();
+    await this.createLoginInfo(userRecord._id, {
       ...userAgentData,
       ...location,
     });
 
     return {
       message: "Successfully signed in",
-      token: User.generateAuthToken(),
+      token: userRecord.generateAuthToken(),
     };
   }
 
@@ -118,12 +118,12 @@ class UserService {
       return { error: "Email verification failed" };
     }
 
-    const User = await this.userModel.findById(
+    const userRecord = await this.userModel.findById(
       { _id: userId },
       "emailVerified"
     );
 
-    if (User.emailVerified) {
+    if (userRecord.emailVerified) {
       return { error: "Email verification failed" };
     }
 
@@ -132,7 +132,7 @@ class UserService {
       userId
     );
 
-    if (!User || !correctCode || emailVerificationCode !== correctCode) {
+    if (!userRecord || !correctCode || emailVerificationCode !== correctCode) {
       return { error: "Email verification failed" };
     }
 
@@ -156,14 +156,14 @@ class UserService {
       return { error: "Your password could not be changed" };
     }
 
-    const User = await this.userModel.findById(userId, "password");
+    const userRecord = await this.userModel.findById(userId, "password");
     const correctCode = await RedisService.getKey("resetPasswordCode", userId);
 
-    if (!User || !correctCode || code !== correctCode) {
+    if (!userRecord || !correctCode || code !== correctCode) {
       return { error: "Your password could not be changed" };
     }
 
-    const isMatch = User.comparePassword(password);
+    const isMatch = userRecord.comparePassword(password);
 
     if (isMatch) {
       return {
@@ -172,7 +172,7 @@ class UserService {
     }
 
     await RedisService.deleteKey("resetPasswordCode", userId);
-    await User.updatePassword(password);
+    await userRecord.updatePassword(password);
 
     return { message: "Your password has been changed" };
   }
@@ -182,20 +182,20 @@ class UserService {
       return { error: "Your password could not be changed" };
     }
 
-    const User = await this.userModel.findById(userId, "password");
-    const isMatch = User.comparePassword(password);
+    const userRecord = await this.userModel.findById(userId, "password");
+    const isMatch = userRecord.comparePassword(password);
 
     if (!isMatch) {
       return { error: "Your password could not be changed" };
     }
 
-    if (User.comparePassword(newPassword)) {
+    if (userRecord.comparePassword(newPassword)) {
       return {
         error: "The new password cannot be the same as the old password",
       };
     }
 
-    await User.updatePassword(newPassword);
+    await userRecord.updatePassword(newPassword);
     return { message: "Your password has been changed" };
   }
 
@@ -227,10 +227,10 @@ class UserService {
   }
 
   async sendResetPasswordEmail(email) {
-    const User = await this.userModel.findOne({ email }, "_id");
+    const userRecord = await this.userModel.findOne({ email }, "_id");
 
-    if (User) {
-      const code = `${User._id}:${randomBytes(32).toString("hex")}`;
+    if (userRecord) {
+      const code = `${userRecord._id}:${randomBytes(32).toString("hex")}`;
 
       // RabbitMQ kullanılmaya başlandığında kullanılacak
       // RabbitMQ.publish("mail:resetPassword", {
@@ -244,7 +244,7 @@ class UserService {
       });
 
       await RedisService.setKey(
-        `resetPasswordCode:${User._id}`,
+        `resetPasswordCode:${userRecord._id}`,
         code,
         60 * 60 * 24
       );
@@ -318,13 +318,13 @@ class UserService {
 
   // Wallet Service
   async createWallet(userId) {
-    const User = await this.userModel.findById(userId, "wallet");
+    const userRecord = await this.userModel.findById(userId, "wallet");
 
-    if (!User) {
+    if (!userRecord) {
       return { error: "User not found" };
     }
 
-    if (User.wallet?.address) {
+    if (userRecord.wallet?.address) {
       return { error: "Address already exists" };
     }
 
