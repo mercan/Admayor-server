@@ -2,7 +2,7 @@ const config = require("../../config/index");
 const authController = require("../controllers/auth.controller");
 const tokenVerifier = require("../../middleware/tokenVerifier");
 
-// Schema
+// Schema for Swagger
 const registerSchema = require("../../schema/auth/RegisterSchema.json");
 const loginSchema = require("../../schema/auth/LoginSchema.json");
 const sendVerificationEmailSchema = require("../../schema/auth/SendVerificationEmailSchema.json");

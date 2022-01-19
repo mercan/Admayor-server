@@ -20,7 +20,7 @@ const register = async (req, res) => {
       message: error.details[0].message,
     });
   }
-
+  
   if (unavailableEmails.includes(User.email.split("@")[1])) {
     return res.status(400).send({
       statusCode: 400,
@@ -36,7 +36,10 @@ const register = async (req, res) => {
     return res.status(409).send({
       statusCode: 409,
       message: result.error,
-    });
+    });{
+      type: Date,
+      default: Date.now,
+    }
   }
 
   return res.status(200).send({

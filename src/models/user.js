@@ -129,7 +129,9 @@ const User = new Schema(
       },
     ],
 
-    lastLoginAt: Date,
+    lastLoginAt: {
+      type: Date,
+    },
   },
   {
     timestamps: true,
