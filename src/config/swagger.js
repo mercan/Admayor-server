@@ -39,8 +39,8 @@ module.exports = {
             password: { type: "string", format: "password" },
             role: {
               type: "string",
-              enum: ["admin", "user"],
-              default: "user",
+              enum: ["USER", "ADMIN"],
+              default: "USER",
             },
             emailVerified: { type: "boolean", default: false },
             bitcoinAddress: { type: "string" },
