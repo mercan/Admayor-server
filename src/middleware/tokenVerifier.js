@@ -11,8 +11,7 @@ module.exports = (req, res, next) => {
     });
   }
 
-  const bearer = bearerHeader.split(" ");
-  const bearerToken = bearer[1];
+  const bearerToken = bearerHeader.split(" ")[1];
   req.token = bearerToken;
 
   try {
