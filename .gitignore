@@ -107,3 +107,6 @@ dist
 *.rdb
 
 test/
+
+.idea
+.vscode
