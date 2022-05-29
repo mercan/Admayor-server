@@ -1,4 +1,4 @@
-const UserService = require("../../services/user");
+const UserService = require("../../services/UserService");
 const unavailableEmails = require("../../utils/unavailableEmail.json");
 
 // User Validation
@@ -24,7 +24,7 @@ const register = async (req, res) => {
   if (unavailableEmails.includes(User.email.split("@")[1])) {
     return res.status(400).send({
       statusCode: 400,
-      message: "Email domain is not allowed",
+      message: "Email domain is not allowed please use a different email.",
     });
   }
 
@@ -32,19 +32,20 @@ const register = async (req, res) => {
   const ipAddress = req.ip || req.ips[0];
   const result = await UserService.register(User, userAgent, ipAddress);
 
-  if (result.error) {
+  if (!result) {
     return res.status(409).send({
       statusCode: 409,
-      message: result.error,
+      message: "User already exists.",
     });
   }
 
   return res.status(200).send({
     statusCode: 200,
-    message: result.message,
+    message: "User created successfully.",
     token: result.token,
   });
 };
+
 
 const login = async (req, res) => {
   const { error, value: User } = LoginSchema.validate(req.body);
@@ -60,16 +61,16 @@ const login = async (req, res) => {
   const ipAddress = req.ip || req.ips[0];
   const result = await UserService.login(User, userAgent, ipAddress);
 
-  if (result.error) {
+  if (!result) {
     return res.status(400).send({
       statusCode: 400,
-      message: result.error,
+      message: "Login failed; Invalid email or password",
     });
   }
 
   return res.status(200).send({
     statusCode: 200,
-    message: result.message,
+    message: "Login successful.",
     token: result.token,
   });
 };

@@ -7,9 +7,11 @@ module.exports = {
   env,
   port,
   databaseURL: process.env.MONGODB_URI,
-  jwtSecretKey: process.env.JWT_SECRET,
-  jwtAlgorithm: process.env.JWT_ALGO,
-  jwtExpiresIn: process.env.JWT_EXPIRES_IN,
+  JWT: {
+    secretKey: process.env.JWT_SECRET_KEY,
+    algorithm: process.env.JWT_ALGORITHM,
+    expiresIn: process.env.JWT_EXPIRES_IN,
+  },
   redis: {
     hostname: process.env.REDIS_HOSTNAME,
     password: process.env.REDIS_PASSWORD,
@@ -18,19 +20,19 @@ module.exports = {
   service: {
     email: {
       API_KEY: process.env.EMAIL_API_KEY,
-      from: process.env.EMAIL_FROM,
+      FROM: process.env.EMAIL_FROM,
     },
   },
   rateLimit: {
     auth: {
       register: {
-        max: Number(process.env.RATE_LIMIT_AUTH_SIGNUP_MAX),
-        timeWindow: Number(process.env.RATE_LIMIT_AUTH_SIGNUP_TIME_WINDOW),
+        max: Number(process.env.RATE_LIMIT_AUTH_REGISTER_MAX),
+        timeWindow: Number(process.env.RATE_LIMIT_AUTH_REGISTER_TIME_WINDOW),
       },
 
       login: {
-        max: Number(process.env.RATE_LIMIT_AUTH_SIGNIN_MAX),
-        timeWindow: Number(process.env.RATE_LIMIT_AUTH_SIGNIN_TIME_WINDOW),
+        max: Number(process.env.RATE_LIMIT_AUTH_LOGIN_MAX),
+        timeWindow: Number(process.env.RATE_LIMIT_AUTH_LOGIN_TIME_WINDOW),
       },
 
       emailVerify: {
@@ -76,11 +78,11 @@ module.exports = {
       },
     },
   },
-  logs: {
-    path: process.env.NODE_ENV === "test" ? "./logs/test" : "./logs",
+  logger: {
+    path: "./logs",
     fileName: "%DATE%",
     extension: ".log",
-    dataPattern: "YYYY-MM-DD",
+    dateFormat: "YYYY-MM-DD",
     timestampPattern: "YYYY-MM-DD HH:mm:ss",
   },
   swaggerRoutePrefix: "/documentation",

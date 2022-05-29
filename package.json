@@ -12,12 +12,13 @@
     "url": "git+https://github.com/mercan/Admayor-server.git"
   },
   "scripts": {
-    "postinstall": "cp -r ./src/lib/rate-limit/* ./node_modules/fastify-rate-limit/",
-    "start": "npm run postinstall && NODE_ENV=production node ./src/server.js",
-    "start:dev": "npm run postinstall && NODE_ENV=development nodemon ./src/server.js",
+    "start": "NODE_ENV=production node ./src/server.js",
+    "start:dev": "NODE_ENV=development nodemon ./src/server.js",
     "test": "NODE_ENV=test tap test"
   },
   "dependencies": {
+    "@fastify/helmet": "^8.1.0",
+    "@fastify/swagger": "^6.0.1",
     "@sendgrid/mail": "^7.4.5",
     "amqplib": "^0.8.0",
     "bcrypt": "^5.0.1",
@@ -25,19 +26,13 @@
     "crypto": "^1.0.1",
     "dayjs": "^1.10.6",
     "dotenv": "^10.0.0",
-    "fastify": "^3.25.3",
-    "fastify-express": "^0.3.3",
-    "fastify-formbody": "^5.2.0",
-    "fastify-helmet": "^5.3.2",
-    "fastify-rate-limit": "^5.6.0",
-    "fastify-swagger": "^4.8.4",
+    "fastify": "^3.29.0",
     "got": "^11.8.2",
     "joi": "^17.4.2",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.13.13",
     "redis": "^3.1.2",
     "satoshi-bitcoin": "^1.0.5",
-    "swagger-stats": "^0.99.2",
     "ua-parser-js": "^0.7.28",
     "winston": "^3.3.4",
     "winston-daily-rotate-file": "^4.5.5"

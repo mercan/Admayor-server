@@ -1,18 +1,18 @@
-const UserService = require("../../services/user");
+const UserService = require("../../services/UserService");
 
 const createWallet = async (req, res) => {
   const wallet = await UserService.createWallet(req.user.id);
 
-  if (wallet.error) {
+  if (!wallet) {
     return res.status(400).send({
       statusCode: 400,
-      message: wallet.error,
+      message: "Fail to create wallet.",
     });
   }
 
   return res.status(200).send({
     statusCode: 200,
-    message: wallet.message,
+    message: "Wallet created successfully.",
     address: wallet.address,
   });
 };
@@ -29,16 +29,16 @@ const saveBTCAddress = async (req, res) => {
 
   const wallet = await UserService.saveBTCAddress(req.user.id, address);
 
-  if (wallet.error) {
+  if (!wallet) {
     return res.status(400).send({
       statusCode: 400,
-      message: wallet.error,
+      message: "Fail to save bitcoin address.",
     });
   }
 
   return res.status(200).send({
     statusCode: 200,
-    message: wallet.message,
+    message: "Bitcoin address saved successfully.",
   });
 };
 

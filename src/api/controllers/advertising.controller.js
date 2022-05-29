@@ -1,5 +1,5 @@
 const advertisingModel = require("../../models/advertising");
-const UserService = require("../../services/user");
+const UserService = require("../../services/UserService");
 const { AdvertisingSchema } = require("../../validation/advertising.schema");
 
 const crateSurfOrAutosurfAd = (advertising) => {
@@ -25,7 +25,7 @@ const createVideoAd = (advertising) => {
   ) {
     return {
       statusCode: 400,
-      message: "Invalid duration",
+      message: "Invalid duration or url",
     };
   }
 
@@ -47,18 +47,20 @@ const createAdvertising = async (req, res) => {
       statusCode: 400,
       message: "Missing geoTargets",
     });
-  } else {
-    req.body.geoTargets = req.body.geoTargets.split(",");
   }
+
+
 
   if (!req.body.languageTargets) {
     return res.status(400).send({
       statusCode: 400,
       message: "Missing languageTargets",
     });
-  } else {
-    req.body.languageTargets = req.body.languageTargets.split(",");
   }
+
+  req.body.geoTargets = req.body.geoTargets.split(",");
+  req.body.languageTargets = req.body.languageTargets.split(",");
+
 
   const { error, value } = AdvertisingSchema.validate(req.body);
 

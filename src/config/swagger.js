@@ -13,10 +13,7 @@ module.exports = {
     },
     servers: [
       {
-        url:
-          env === "development"
-            ? `http://localhost:${port}`
-            : "https://admayor.herokuapp.com",
+        url: `http://localhost:${port}`,
         description: env === "development" ? "Development" : "Production",
       },
     ],

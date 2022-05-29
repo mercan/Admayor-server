@@ -9,9 +9,9 @@ module.exports = ({ _id: userId, email, username, role }) =>
       username,
       role,
     },
-    config.jwtSecretKey,
+    config.JWT.secretKey,
     {
-      algorithm: config.jwtAlgorithm,
-      expiresIn: config.jwtExpiresIn,
+      algorithm: config.JWT.algorithm,
+      expiresIn: config.JWT.expiresIn,
     }
   );

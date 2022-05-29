@@ -6,9 +6,9 @@ const got = require("got");
 
 // Services
 // const RabbitMQ = require("./RabbitMQ");
-const RedisService = require("./redis");
-const MailService = require("./mail");
-const WalletService = require("./wallet");
+const RedisService = require("./RedisService");
+const MailService = require("./MailService");
+const WalletService = require("./WalletService");
 
 class UserService {
   constructor({ userModel }) {
@@ -28,7 +28,7 @@ class UserService {
     );
 
     if (userRecord) {
-      return { error: "User already exists" };
+      return false;
     }
 
     const userAgentData = { userAgent: userAgentParser(userAgent) };
@@ -47,7 +47,6 @@ class UserService {
     user.country = location.location?.country ?? "Unknown"; // location && locatin.country;
     user.referenceCode = user.username;
     const User = await this.userModel.create(user);
-    const token = User.generateAuthToken();
 
     await User.updateLastLogin();
     await this.sendVerificationEmail(User);
@@ -73,10 +72,7 @@ class UserService {
       );
     }
 
-    return {
-      message: "Successfully signed up",
-      token,
-    };
+    return { token: User.generateAuthToken() };
   }
 
   /**
@@ -90,13 +86,13 @@ class UserService {
     const userRecord = await this.userModel.findOne({ email: user.email });
 
     if (!userRecord) {
-      return { error: "Login failed; Invalid email or password" };
+      return false;
     }
 
     const isMatch = userRecord.comparePassword(user.password);
 
     if (!isMatch) {
-      return { error: "Login failed; Invalid email or password" };
+      return false;
     }
 
     const userAgentData = { userAgent: userAgentParser(userAgent) };
@@ -107,10 +103,7 @@ class UserService {
       ...location,
     });
 
-    return {
-      message: "Successfully signed in",
-      token: userRecord.generateAuthToken(),
-    };
+    return { token: userRecord.generateAuthToken() };
   }
 
   async verifyEmail(userId, emailVerificationCode) {
@@ -321,11 +314,11 @@ class UserService {
     const userRecord = await this.userModel.findById(userId, "wallet");
 
     if (!userRecord) {
-      return { error: "User not found" };
+      return false;
     }
 
     if (userRecord.wallet?.address) {
-      return { error: "Address already exists" };
+      return false;
     }
 
     const wallet = WalletService.createWallet(userId);
@@ -342,25 +335,22 @@ class UserService {
 
     await this.userModel.updateOne({ _id: userId }, { $set: { wallet } });
 
-    return {
-      message: "Wallet created successfully",
-      address: wallet.address,
-    };
+    return { address: wallet.address };
   }
 
   async saveBTCAddress(userId, address) {
     if (!WalletService.isValidAddress(address)) {
-      return { error: "Invalid bitcoin address" };
+      return false;
     }
 
     const userRecord = await this.userModel.findById(userId, "bitcoinAddress");
 
     if (!userRecord) {
-      return { error: "User not found" };
+      return false;
     }
 
     if (userRecord.bitcoinAddress === address) {
-      return { message: "Bitcoin address saved" };
+      return true;
     }
 
     await this.userModel.updateOne(
@@ -375,7 +365,7 @@ class UserService {
       }
     );
 
-    return { message: "Bitcoin address saved" };
+    return true;
   }
 }
 

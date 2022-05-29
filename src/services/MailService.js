@@ -5,7 +5,7 @@ const logger = require("../helpers/logger");
 class MailService {
   constructor() {
     this.mailService = sgMail.setApiKey(config.service.email.API_KEY);
-    this.from = config.service.email.from;
+    this.from = config.service.email.FROM;
   }
 
   chooseMailTemplate(mailFor) {
@@ -49,11 +49,11 @@ class MailService {
 
     const result = await this.mailService.send(message);
 
-    result[0].statusCode === 202
-      ? logger.info(`Mail sent to: ${user.email}`, { service: "Mail" })
-      : logger.error(`Mail couldn't sent to ${user.email}.`, {
-          service: "Mail",
-        });
+    if (result[0].statusCode === 202) {
+      logger.info(`Email sent to ${user.email}`, { service: "Mail" });
+    } else {
+      logger.error(`Email not sent to ${user.email}`, { service: "Mail" });
+    }
   }
 }
 

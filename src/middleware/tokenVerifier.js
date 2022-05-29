@@ -7,7 +7,7 @@ module.exports = (req, res, next) => {
   if (!bearerHeader) {
     return res.status(403).send({
       statusCode: 403,
-      message: "Missing authorization header",
+      message: "Missing authorization header!",
     });
   }
 
@@ -15,7 +15,7 @@ module.exports = (req, res, next) => {
   req.token = bearerToken;
 
   try {
-    const decode = jwt.verify(bearerToken, config.jwtSecretKey);
+    const decode = jwt.verify(bearerToken, config.JWT.secretKey);
 
     decode.id = decode.userId;
     req.user = decode;

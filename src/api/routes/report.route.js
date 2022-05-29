@@ -2,6 +2,7 @@ const config = require("../../config/index");
 const reportController = require("../controllers/report.controller");
 const tokenVerifier = require("../../middleware/tokenVerifier");
 
+// Schema for Swagger
 const CreateReportSchema = require("../../schema/report/CreateReportSchema.json");
 
 const routes = [
